@@ -24,7 +24,7 @@ body {
   font-weight: 400;
   line-height: 1.2;
   color: #000;
-  background: #e4e3e0;
+  background: #ffffff;
   text-transform: none;
   margin: 0;
   padding: 0;
@@ -35,6 +35,10 @@ body {
 .hero {
   width: 100vw;
   box-sizing: border-box;
+}
+
+.hero p {
+  margin: 0;
 }
 
 .intro {
@@ -49,7 +53,7 @@ body {
 .sites {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
   overflow: hidden;
   padding: 60px;
   box-sizing: border-box;

@@ -60,8 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const popupWidth = popup.offsetWidth;
         const shouldFlip = x + popupWidth + 20 > window.innerWidth;
   
-        popup.style.left = shouldFlip ? `${x - popupWidth - 20}px` : `${x + 20}px`;
-        popup.style.top = `${y}px`;
+        const offsetX = popupWidth / 2;
+        const offsetY = popup.offsetHeight / 2;
+        
+        popup.style.left = shouldFlip
+          ? `${x - offsetX - popupWidth / 2}px`
+          : `${x - offsetX}px`;
+        
+        popup.style.top = `${y - offsetY}px`;
         popup.style.visibility = 'visible';
         popup.style.opacity = '1';
   
