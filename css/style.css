@@ -1,11 +1,21 @@
-* {
+* 
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('../fonts/CommitMonoV143-VF.woff2') format('woff2');
+  font-weight: 100 900; /* variable font range */
+  font-style: normal;
+  font-display: swap;
+}
+
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
   
   body {
-    font-family: sans-serif;
+    font-family: 'Commit Mono', monospace;
+    font-weight: 400; /* or anything from 100 to 900 */  
     background: #f4f4f4;
     color: #222;
     line-height: 1.6;
