@@ -1,4 +1,12 @@
 @font-face {
+  font-family: 'PS Times';
+  src: url('../fonts/PSTimesTrial-Regular.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Commit Mono';
   src: url('../fonts/CommitMonoV143-VF.woff2') format('woff2');
   font-weight: 100 900;
@@ -6,59 +14,117 @@
   font-display: swap;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html {
+  font-size: 16px;
 }
 
 body {
-  font-family: 'Commit Mono', monospace;
+  font-family: 'PS Times', serif;
+  font-size: 2rem;
   font-weight: 400;
-  background: #f4f4f4;
-  color: #222;
-  line-height: 1.6;
+  line-height: 1.2;
+  color: #000;
+  background: #e4e3e0;
+  text-transform: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .hero {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 .intro {
-  max-width: 700px;
-  margin-bottom: 3rem;
-}
-
-.sites {
+  font-size: 3vw;
+  line-height: 1.1;
   width: 100%;
-  max-width: 700px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.site-item {
+/* Floating Grid Section */
+.sites {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  padding: 60px;
+  box-sizing: border-box;
+}
+
+.floating-block {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background-size: cover;
+  background-position: center;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 30px;
-  border-top: 1px solid #ccc;
-  padding: 0.5rem 0;
-  font-size: 0.95rem;
+  justify-content: center;
 }
 
-.site-item:last-child {
-  border-bottom: 1px solid #ccc;
+.floating-tag {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem;
+  color: #000;
+  pointer-events: none;
+  text-transform: uppercase;
 }
 
-.site-link {
-  color: #0066cc;
-  text-decoration: none;
+.popup {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #000;
+  padding: 1rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out forwards;
+  text-transform: uppercase;
 }
 
-.site-meta {
-  opacity: 0.6;
-  font-size: 0.85rem;
+.popup a {
+  color: #000;
+  text-decoration: underline;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .site-item a {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 0.5rem;
+  }
+
+  .site-meta {
+    text-align: left;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 728px) {
+  .intro {
+    font-size: 5vw;
+    width: 100%;
+    padding: 20px;
+  }
+
+  body {
+    font-size: 1.2rem;
+  }
 }
