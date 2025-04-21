@@ -46,12 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
       block.setAttribute('data-link', project.link);
       block.style.backgroundImage = `url(images/${project.image})`;
   
-      // Initial position
-      let x = Math.random() * (sitesContainer.offsetWidth - 120);
-      let y = Math.random() * (sitesContainer.offsetHeight - 120);
+      const thumbSize = window.innerWidth <= 728 ? 75 : 120;
+      let x = Math.random() * (sitesContainer.offsetWidth - thumbSize);
+      let y = Math.random() * (sitesContainer.offsetHeight - thumbSize);
+      block.style.width = `${thumbSize}px`;
+      block.style.height = `${thumbSize}px`;
       block.style.left = `${x}px`;
       block.style.top = `${y}px`;
-  
+        
       sitesContainer.appendChild(block);
   
       // Random movement
