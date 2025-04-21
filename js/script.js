@@ -94,13 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const preferLeft = spaceLeft > popupMaxWidth + 20;
   
         popup.innerHTML = `
-          <strong>${project.client}</strong>
-          <span>${project.work}</span>
-          <span>${project.year}</span>
-          <p>${project.description}</p>
-          <a href="${project.link}" target="_blank">Visit site</a>
-        `;
-  
+        <strong>${project.client}</strong>
+        <span>${project.work}</span>
+        <span>${project.year}</span>
+        <p>${project.description}</p>
+        <a href="${project.link}" target="_blank"><span class="link-text">Visit site</span></a>
+      `;
+        
         popup.style.display = 'flex';
         popup.style.maxWidth = `${popupMaxWidth}px`;
         popup.style.visibility = 'hidden';
