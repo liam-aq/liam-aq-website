@@ -94,8 +94,9 @@ body {
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   z-index: 1000;
-  animation: slideIn 0.3s ease-out forwards;
   text-transform: uppercase;
+  transition: opacity 0.2s ease;
+  box-sizing: border-box;
 }
 
 .popup a {

@@ -1,24 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     const blocks = document.querySelectorAll('.floating-block');
     const popup = document.getElementById('popup');
-    document.body.appendChild(popup);
+    document.body.appendChild(popup); // keep popup global
     const container = document.querySelector('.sites');
     const padding = 60;
   
-    let isOverBlock = false;
-    let isOverPopup = false;
-    let popupIsFrozen = false;
-  
-    function updatePopupVisibility() {
-      if (!isOverBlock && !isOverPopup) {
-        popup.style.display = 'none';
-        popupIsFrozen = false;
-      }
-    }
-  
+    // Position blocks responsively
     blocks.forEach(block => {
       const tag = block.querySelector('.floating-tag');
-  
       const label = tag.textContent.trim().toLowerCase().replace(/\s+/g, '-');
       block.style.backgroundImage = `url(images/${label}.png)`;
   
@@ -28,20 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const yPercent = Math.random() * maxY;
       block.style.left = `${xPercent}%`;
       block.style.top = `${yPercent}%`;
+    });
   
+    // Handle popup logic
+    blocks.forEach(block => {
       block.addEventListener('mouseenter', () => {
-        isOverBlock = true;
-      });
+        const { top, left, right, bottom, width, height } = block.getBoundingClientRect();
+        const popupMaxWidth = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
+        const spaceRight = window.innerWidth - right;
+        const spaceLeft = left;
   
-      block.addEventListener('mouseleave', () => {
-        isOverBlock = false;
-        setTimeout(updatePopupVisibility, 50);
-      });
-  
-      block.addEventListener('mousemove', (e) => {
-        if (popupIsFrozen) return;
-  
-        const { pageX: x, pageY: y } = e;
+        const preferRight = spaceRight > popupMaxWidth + 20;
+        const preferLeft = spaceLeft > popupMaxWidth + 20;
   
         popup.innerHTML = `
           <strong>${block.dataset.client}</strong>
@@ -51,36 +38,54 @@ document.addEventListener("DOMContentLoaded", () => {
           <a href="${block.dataset.link}" target="_blank">Visit site</a>
         `;
   
-        popup.style.visibility = 'hidden';
-        popup.style.opacity = '0';
         popup.style.display = 'flex';
-        popup.style.left = `-9999px`;
-        popup.style.top = `-9999px`;
+        popup.style.maxWidth = `${popupMaxWidth}px`;
+        popup.style.visibility = 'hidden'; // prevent layout flash
+        popup.style.opacity = '0';
+        popup.style.left = '-9999px'; // offscreen for measurement
+        popup.style.top = '-9999px';
   
+        // Trigger reflow to measure
+        const popupHeight = popup.offsetHeight;
         const popupWidth = popup.offsetWidth;
-        const shouldFlip = x + popupWidth + 20 > window.innerWidth;
   
-        const offsetX = popupWidth / 2;
-        const offsetY = popup.offsetHeight / 2;
-        
-        popup.style.left = shouldFlip
-          ? `${x - offsetX - popupWidth / 2}px`
-          : `${x - offsetX}px`;
-        
-        popup.style.top = `${y - offsetY}px`;
-        popup.style.visibility = 'visible';
+        // Vertical alignment: bottom if near viewport edge
+        const tooLow = bottom + popupHeight > window.innerHeight;
+        const verticalAlign = tooLow ? (bottom - popupHeight) : top;
+  
+        // Horizontal alignment: left/right or overlap on mobile
+        let popupX;
+        if (window.innerWidth < 640) {
+          popupX = left + width / 2 - popupWidth / 2;
+        } else if (preferRight) {
+          popupX = right + 12;
+        } else if (preferLeft) {
+          popupX = left - popupWidth - 12;
+        } else {
+          popupX = left + width / 2 - popupWidth / 2;
+        }
+  
+        // Clamp within viewport
+        popupX = Math.max(12, Math.min(popupX, window.innerWidth - popupWidth - 12));
+        const popupY = Math.max(12, Math.min(verticalAlign, window.innerHeight - popupHeight - 12));
+  
+        popup.style.left = `${popupX}px`;
+        popup.style.top = `${popupY}px`;
         popup.style.opacity = '1';
+        popup.style.visibility = 'visible';
+      });
   
-        popupIsFrozen = true;
+      block.addEventListener('mouseleave', () => {
+        // Only hide if not hovering the popup itself
+        popup.style.display = 'none';
       });
     });
   
     popup.addEventListener('mouseenter', () => {
-      isOverPopup = true;
+      // allow popup to persist if hovered (optional — you can remove this block to disable)
     });
   
     popup.addEventListener('mouseleave', () => {
-      isOverPopup = false;
-      setTimeout(updatePopupVisibility, 50);
+      popup.style.display = 'none';
     });
   });
