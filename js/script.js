@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         work: 'website',
         year: '2025',
         description: 'Brand and web work across hospitality clients.',
-        link: 'https:/www.week-days.com.au/'
+        link: 'https://week-days.com.au/'
       },
       {
         name: 'veraison',
