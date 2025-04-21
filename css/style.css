@@ -14,8 +14,12 @@
   font-display: swap;
 }
 
-html {
-  font-size: 16px;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 body {
@@ -24,21 +28,19 @@ body {
   font-weight: 400;
   line-height: 1.2;
   color: #000;
-  background: #ffffff;
+  background: #fff;
   text-transform: none;
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-  overflow-x: hidden;
+  position: relative;
 }
 
 .hero {
+  position: relative;
   width: 100vw;
+  height: 100vh;
   box-sizing: border-box;
-}
-
-.hero p {
-  margin: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .intro {
@@ -47,16 +49,26 @@ body {
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
+  letter-spacing: -0.005em;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 
-/* Floating Grid Section */
+.intro p {
+  margin-top: 0;
+  margin-bottom: 1.5em;
+}
+
 .sites {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
-  height: 80vh;
+  height: 100vh;
   overflow: hidden;
-  padding: 60px;
-  box-sizing: border-box;
+  z-index: 3;
+  pointer-events: none;
 }
 
 .floating-block {
@@ -65,22 +77,11 @@ body {
   height: 120px;
   background-size: cover;
   background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  pointer-events: auto;
 }
 
-.floating-tag {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 6px;
-  font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  color: #000;
-  pointer-events: none;
-  text-transform: uppercase;
+.floating-block.paused {
+  animation-play-state: paused;
 }
 
 .popup {
@@ -96,30 +97,14 @@ body {
   z-index: 1000;
   text-transform: uppercase;
   transition: opacity 0.2s ease;
+  max-width: 300px;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 
 .popup a {
   color: #000;
   text-decoration: underline;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .site-item a {
-    flex-direction: column;
-    align-items: flex-start;
-    row-gap: 0.5rem;
-  }
-
-  .site-meta {
-    text-align: left;
-    justify-self: start;
-  }
 }
 
 @media (max-width: 728px) {

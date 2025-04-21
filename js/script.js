@@ -1,59 +1,116 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const blocks = document.querySelectorAll('.floating-block');
     const popup = document.getElementById('popup');
-    document.body.appendChild(popup); // keep popup global
-    const container = document.querySelector('.sites');
-    const padding = 60;
+    const sitesContainer = document.getElementById('sites-container');
+    document.body.appendChild(popup);
   
-    // Position blocks responsively
-    blocks.forEach(block => {
-      const tag = block.querySelector('.floating-tag');
-      const label = tag.textContent.trim().toLowerCase().replace(/\s+/g, '-');
-      block.style.backgroundImage = `url(images/${label}.png)`;
+    const projects = [
+      {
+        name: 'weekdays',
+        image: 'weekdays.png',
+        client: 'Weekdays',
+        work: 'website',
+        year: '2025',
+        description: 'Brand and web work across hospitality clients.',
+        link: 'https:/www.week-days.com.au/'
+      },
+      {
+        name: 'veraison',
+        image: 'veraison.png',
+        client: 'veraison',
+        work: 'brand, website, print',
+        year: '2025',
+        description: 'A print-turned-digital wine and culture zine.',
+        link: 'https://www.veraisonmag.com/'
+      },
+      {
+        name: 'oishii dry',
+        image: 'oishii-dry.png',
+        client: 'Oishii Dry',
+        work: 'brand, website, packaging',
+        year: '2025',
+        description: 'A local yuzu rice lager with japanese sensibilities.',
+        link: 'https://www.oishiiworld.com.au/'
+      },
+    ];
   
-      const maxX = 100 - (block.offsetWidth / container.offsetWidth) * 100;
-      const maxY = 100 - (block.offsetHeight / container.offsetHeight) * 100;
-      const xPercent = Math.random() * maxX;
-      const yPercent = Math.random() * maxY;
-      block.style.left = `${xPercent}%`;
-      block.style.top = `${yPercent}%`;
-    });
+    let activeBlock = null;
+    let isOverPopup = false;
   
-    // Handle popup logic
-    blocks.forEach(block => {
+    projects.forEach(project => {
+      const block = document.createElement('div');
+      block.classList.add('floating-block');
+      block.setAttribute('data-client', project.client);
+      block.setAttribute('data-work', project.work);
+      block.setAttribute('data-year', project.year);
+      block.setAttribute('data-description', project.description);
+      block.setAttribute('data-link', project.link);
+      block.style.backgroundImage = `url(images/${project.image})`;
+  
+      // Initial position
+      let x = Math.random() * (sitesContainer.offsetWidth - 120);
+      let y = Math.random() * (sitesContainer.offsetHeight - 120);
+      block.style.left = `${x}px`;
+      block.style.top = `${y}px`;
+  
+      sitesContainer.appendChild(block);
+  
+      // Random movement
+      let vx = (Math.random() - 0.5) * 0.5;
+      let vy = (Math.random() - 0.5) * 0.5;
+  
+      function float() {
+        if (!block.classList.contains('paused')) {
+          x += vx;
+          y += vy;
+  
+          if (x < 0 || x > sitesContainer.offsetWidth - 120) vx *= -1;
+          if (y < 0 || y > sitesContainer.offsetHeight - 120) vy *= -1;
+  
+          block.style.left = `${x}px`;
+          block.style.top = `${y}px`;
+        }
+        requestAnimationFrame(float);
+      }
+  
+      requestAnimationFrame(float);
+  
       block.addEventListener('mouseenter', () => {
-        const { top, left, right, bottom, width, height } = block.getBoundingClientRect();
-        const popupMaxWidth = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
-        const spaceRight = window.innerWidth - right;
-        const spaceLeft = left;
+        block.classList.add('paused');
+        if (activeBlock !== block) popup.style.display = 'none';
+        activeBlock = block;
   
+        const rect = block.getBoundingClientRect();
+        const top = rect.top + window.pageYOffset;
+        const left = rect.left + window.pageXOffset;
+        const right = rect.right + window.pageXOffset;
+        const width = rect.width;
+  
+        const popupMaxWidth = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
+        const spaceRight = window.innerWidth - rect.right;
+        const spaceLeft = rect.left;
         const preferRight = spaceRight > popupMaxWidth + 20;
         const preferLeft = spaceLeft > popupMaxWidth + 20;
   
         popup.innerHTML = `
-          <strong>${block.dataset.client}</strong>
-          <span>${block.dataset.work}</span>
-          <span>${block.dataset.year}</span>
-          <p>${block.dataset.description}</p>
-          <a href="${block.dataset.link}" target="_blank">Visit site</a>
+          <strong>${project.client}</strong>
+          <span>${project.work}</span>
+          <span>${project.year}</span>
+          <p>${project.description}</p>
+          <a href="${project.link}" target="_blank">Visit site</a>
         `;
   
         popup.style.display = 'flex';
         popup.style.maxWidth = `${popupMaxWidth}px`;
-        popup.style.visibility = 'hidden'; // prevent layout flash
+        popup.style.visibility = 'hidden';
         popup.style.opacity = '0';
-        popup.style.left = '-9999px'; // offscreen for measurement
-        popup.style.top = '-9999px';
+        popup.style.left = `-9999px`;
+        popup.style.top = `-9999px`;
   
-        // Trigger reflow to measure
         const popupHeight = popup.offsetHeight;
         const popupWidth = popup.offsetWidth;
+        const tooLow = rect.bottom + popupHeight > window.innerHeight;
+        const popupY = tooLow ? rect.bottom + window.pageYOffset - popupHeight : top;
   
-        // Vertical alignment: bottom if near viewport edge
-        const tooLow = bottom + popupHeight > window.innerHeight;
-        const verticalAlign = tooLow ? (bottom - popupHeight) : top;
-  
-        // Horizontal alignment: left/right or overlap on mobile
         let popupX;
         if (window.innerWidth < 640) {
           popupX = left + width / 2 - popupWidth / 2;
@@ -65,27 +122,35 @@ document.addEventListener("DOMContentLoaded", () => {
           popupX = left + width / 2 - popupWidth / 2;
         }
   
-        // Clamp within viewport
         popupX = Math.max(12, Math.min(popupX, window.innerWidth - popupWidth - 12));
-        const popupY = Math.max(12, Math.min(verticalAlign, window.innerHeight - popupHeight - 12));
+        const finalY = Math.max(12, Math.min(popupY, window.innerHeight + window.pageYOffset - popupHeight - 12));
   
         popup.style.left = `${popupX}px`;
-        popup.style.top = `${popupY}px`;
+        popup.style.top = `${finalY}px`;
         popup.style.opacity = '1';
         popup.style.visibility = 'visible';
       });
   
       block.addEventListener('mouseleave', () => {
-        // Only hide if not hovering the popup itself
-        popup.style.display = 'none';
+        setTimeout(() => {
+          if (!isOverPopup) {
+            popup.style.display = 'none';
+            block.classList.remove('paused');
+            activeBlock = null;
+          }
+        }, 20);
       });
     });
   
     popup.addEventListener('mouseenter', () => {
-      // allow popup to persist if hovered (optional — you can remove this block to disable)
+      isOverPopup = true;
+      if (activeBlock) activeBlock.classList.add('paused');
     });
   
     popup.addEventListener('mouseleave', () => {
+      isOverPopup = false;
+      if (activeBlock) activeBlock.classList.remove('paused');
       popup.style.display = 'none';
+      activeBlock = null;
     });
   });
