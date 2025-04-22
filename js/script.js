@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sitesContainer = document.getElementById("sites-container");
   document.body.appendChild(popup);
 
+
   let activeBlock = null;
   let isOverPopup = false;
   const floatCancels = new Set();
@@ -217,136 +218,372 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("mousemove", trackPupils);
   setInterval(() => { if(Math.random() < 0.3) blinkAll(); }, 2500);
 
-  // ────────────────────────────────────────────────────────────────
-  // 5) WAITER SEQUENCE • BILL • FINAL PAYPAL
-  // ────────────────────────────────────────────────────────────────
-  let waiterIndex    = 0,
-      waiterStopped  = false,
-      waiterTimeout  = null,
-      billTotal      = 0;
+// ────────────────────────────────────────────────────────────────
+// 5) WAITER SEQUENCE • BILL • FINAL PAYPAL
+// ────────────────────────────────────────────────────────────────
+let waiterIndex    = 0,
+    waiterStopped  = false,
+    waiterTimeout  = null,
+    billTotal      = 0,
+    lightsDimmed   = false;
 
-  function addToBill(item, cost) {
-    billTotal += cost;
-    let bill = document.getElementById("waiter-bill");
-    if (!bill) {
-      bill = document.createElement("div");
-      bill.id = "waiter-bill";
-      bill.className = "bill";
-      document.body.appendChild(bill);
-    }
-    // remove old link
-    bill.querySelector(".settle-link")?.remove();
-    // add new line
-    const line = document.createElement("div");
-    line.className = "bill-item";
-    line.textContent = `${item} – ${cost === 0 ? "FREE" : `$${cost.toFixed(2)}`}`;
-    bill.appendChild(line);
-    // ensure header
-    if (!bill.querySelector(".bill-header")) {
-      const hdr = document.createElement("span");
-      hdr.className = "bill-header";
-      hdr.textContent = "BILL";
-      bill.prepend(hdr, document.createElement("br"));
-    }
-    // append settle‑up
-    const settle = document.createElement("a");
-    settle.href = "#";
-    settle.className = "settle-link";
-    settle.innerHTML = `<span class="link-text">settle up</span>`;
-    settle.onclick = e => {
-      e.preventDefault();
-      waiterStopped = true;
-      document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
-      showPayment();
+// grab our new UI pieces
+const overlayEl  = document.getElementById('dim-overlay');
+const jazzUI     = document.getElementById('jazz-ui');
+const jazzPlayer = document.getElementById('jazz-player');
+
+// create the lights toggle link on‐demand
+let lightToggle = null;
+function ensureLightToggle() {
+  if (!lightToggle) {
+    lightToggle = document.createElement('a');
+    lightToggle.id = 'light-toggle';
+    lightToggle.textContent = 'turn the lights back up';
+    document.body.appendChild(lightToggle);
+    lightToggle.onclick = () => {
+      lightsDimmed = !lightsDimmed;
+      overlayEl.classList.toggle('active', lightsDimmed);
+      lightToggle.textContent = lightsDimmed
+        ? 'turn the lights back up'
+        : 'dim the lights again';
     };
-    bill.appendChild(settle);
+  }
+}
+
+// wire up jazz play/pause
+document.getElementById('jazz-toggle').onclick = () => {
+  if (jazzPlayer.paused) {
+    jazzPlayer.play();
+    jazzUI.querySelector('#jazz-toggle').textContent = 'pause';
+  } else {
+    jazzPlayer.pause();
+    jazzUI.querySelector('#jazz-toggle').textContent = 'play';
+  }
+};
+
+function addToBill(item, cost) {
+  billTotal += cost;
+  let bill = document.getElementById("waiter-bill");
+  if (!bill) {
+    bill = document.createElement("div");
+    bill.id = "waiter-bill";
+    bill.className = "bill";
+    document.body.appendChild(bill);
+  }
+  bill.querySelector(".settle-link")?.remove();
+  const line = document.createElement("div");
+  line.className = "bill-item";
+  line.textContent = `${item} – ${cost === 0 ? "FREE" : `$${cost.toFixed(2)}`}`;
+  bill.appendChild(line);
+  if (!bill.querySelector(".bill-header")) {
+    const hdr = document.createElement("span");
+    hdr.className = "bill-header";
+    hdr.textContent = "BILL";
+    bill.prepend(hdr, document.createElement("br"));
+  }
+  const settle = document.createElement("a");
+  settle.href = "#"; settle.className = "settle-link";
+  settle.innerHTML = `<span class="link-text">settle up</span>`;
+  settle.onclick = e => {
+    e.preventDefault();
+    waiterStopped = true;
+    document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
+    showPayment();
+  };
+  bill.appendChild(settle);
+}
+
+const waiterSteps = [
+  {
+    question: "Welcome to Liam's website. I'll be taking care of you today. Can I start you with any still or sparkling water?",
+    options: [
+      { label: 'STILL',     cost: 0 },
+      { label: 'SPARKLING', cost: 3.5 }
+    ],
+    mandatory: true
+  },
+  {
+    question: "How are we settling in? Can I interest you in a freshly shucked oyster and a glass of chablis? Or perhaps some manchego croquetas, paprika aioli and a crisp lager?",
+    options: [
+      { label: 'OYSTER & CHABLIS', cost: 15.5 },
+      { label: 'CROQUETAS & BEER', cost: 13.5 }
+    ]
+  },
+  // ← AMBIANCE STEP
+  {
+    question: "How’s the website’s ambiance? Can I do anything to make you more comfortable?",
+    options: [
+      {
+        label: 'DIM THE LIGHTS',
+        cost: 0,
+        action: () => {
+          overlayEl.classList.add('active');
+          lightsDimmed = true;
+          ensureLightToggle();
+          lightToggle.classList.remove('hidden');
+        }
+      },
+      {
+        label: 'PUT ON SOME JAZZ',
+        cost: 0,
+        action: () => {
+          jazzUI.classList.remove('hidden');
+          jazzPlayer.play();
+        }
+      }
+    ]
+  },
+  {
+    question: "Are we feeling like some more snacks? We have a lovely simple tart of snow crab and chives, and a beautiful kangaroo tataki brushed with our house dashi.",
+    options: [
+      { label: 'CRAB TART',       cost: 21 },
+      { label: 'KANGAROO TATAKI', cost: 19 }
+    ]
+  },
+  {
+    question: "Can I get you another drink at all? We do a killer rye old fashioned. There's also a bouncy new Tasmanian gamay on the list.",
+    options: [
+      { label: 'RYE OLD FASH', cost: 14 },
+      { label: 'GAMAY',       cost: 11 }
+    ]
+  },
+  {
+    question: "Are we feeling ready for mains? The specials tonight are to die for. Our pie of the evening is ethically hunted venison stewed in red wine and herbs de Provence. And tonight's fish is a swordfish steak cooked in brown butter, served on sauce vierge.",
+    options: [
+      { label: 'DEER PIE',  cost: 21 },
+      { label: 'SWORDFISH', cost: 24 }
+    ]
+  },
+  {
+    question: "Room for dessert? Go on, just take a peep. Treat yourself. We have a very simple lemon tart, and we're also doing a Crêpes Suzette finished tableside if you feel like a bit of a show.",
+    options: [
+      { label: 'LEMON TART',     cost: 9 },
+      { label: 'CRÊPES SUZETTE', cost: 11 }
+    ]
+  },
+  {
+    question: "Can I offer you any tea, coffee, or a complimentary cigarette to round out the meal?",
+    options: [
+      { label: 'TEA',       cost: 3 },
+      { label: 'COFFEE',    cost: 4 },
+      { label: 'CIGARETTE', cost: 0 }
+    ]
+  },
+  {
+    question: "Shall I bring you the cheque?",
+    options: [
+      { label: 'YES', cost: 0, isFinal: true }
+    ]
+  }
+];
+
+function showWaiterStep(i) {
+  if (waiterStopped || i >= waiterSteps.length) return;
+  const step = waiterSteps[i];
+  const w    = document.createElement("div");
+  w.className = "popup waiter-popup";
+
+  // question
+  const qEl = document.createElement("p");
+  w.appendChild(qEl);
+
+  // options
+  step.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "waiter-option";
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      clearTimeout(waiterTimeout);
+      w.remove();
+
+      // only add to bill if it's not the final “Yes” step and no special action
+      if (!opt.isFinal && !opt.action) {
+        addToBill(opt.label, opt.cost);
+      }
+
+      // run any ambiance/jazz action
+      if (opt.action) opt.action();
+
+      // final choice → showPayment
+      if (opt.isFinal) return showPayment();
+
+      // otherwise continue
+      waiterIndex++;
+      waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
+    };
+    w.appendChild(btn);
+  });
+
+  // “no thanks” always advances
+  if (!step.mandatory) {
+    const noBtn = document.createElement("a");
+    noBtn.className = "waiter-no";
+    noBtn.href = "#";
+    noBtn.innerHTML = `<span class="link-text">no thanks</span>`;
+    noBtn.onclick = e => {
+      e.preventDefault();
+      clearTimeout(waiterTimeout);
+      w.remove();
+      waiterIndex++;
+      waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
+    };
+    w.appendChild(noBtn);
   }
 
-  const waiterSteps = [
-    { question:"Welcome to Liam's website. I'll be taking care of you today. Can I start you with any still or sparkling water?", options:[{label:'STILL',cost:0},{label:'SPARKLING',cost:3.5}], mandatory:true },
-    { question:"How are we settling in? Can I interest you in a freshly shucked oyster and a glass of chablis? Or perhaps some manchego croquetas, paprika aioli and a crisp lager?", options:[{label:'OYSTER & CHABLIS',cost:15.5},{label:'CROQUETAS & BEER',cost:13.5}] },
-    { question:"Are we feeling like some more snacks? We have a lovely simple tart of snow crab and chives, and a beautiful kangaroo tataki brushed with our house dashi.", options:[{label:'CRAB TART',cost:21},{label:'KANGAROO TATAKI',cost:19}] },
-    { question:"Can I get you another drink at all? We do a killer rye old fashioned. There's also a bouncy new Tasmanian gamay on the list.", options:[{label:'RYE OLD FASH',cost:14},{label:'GAMAY',cost:11}] },
-    { question:"Are we feeling ready for mains? The specials tonight are to die for. Our pie of the evening is ethically hunted venison stewed in red wine and herbs de Provence. And tonight's fish is a swordfish steak cooked in brown butter, served on sauce vierge.", options:[{label:'DEER PIE',cost:21},{label:'SWORDFISH',cost:24}] },
-    { question:"Room for dessert? Go on, just take a peep. Treat yourself. We have a very simple lemon tart, and we're also doing a Crêpes Suzette finished tableside if you feel like a bit of a show.", options:[{label:'LEMON TART',cost:9},{label:'CRÊPES SUZETTE',cost:11}] },
-    { question:"Can I offer you any tea, coffee, or a complimentary cigarette to round out the meal?", options:[{label:'TEA',cost:3},{label:'COFFEE',cost:4},{label:'CIGARETTE',cost:0}] },
-    { question:"Shall I bring you the cheque?", options:[{label:'YES',cost:0,isFinal:true}] }
-  ];
+  document.body.appendChild(w);
 
-  function showWaiterStep(i) {
-    if (waiterStopped || i >= waiterSteps.length) return;
-    const step = waiterSteps[i];
-    const w = document.createElement("div");
-    w.className = "popup waiter-popup";
-    const qEl = document.createElement("p");
-    w.appendChild(qEl);
-
-    step.options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "waiter-option";
-      btn.textContent = opt.label;
-      btn.onclick = () => {
-        w.remove();
-        addToBill(opt.label, opt.cost);
-        if (opt.isFinal) return showPayment();
-        waiterIndex++;
-        waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
-      };
-      w.appendChild(btn);
-    });
-
-    if (!step.mandatory) {
-      const noBtn = document.createElement("a");
-      noBtn.className = "waiter-no";
-      noBtn.href = "#";
-      noBtn.innerHTML = `<span class="link-text">no thanks</span>`;
-      noBtn.onclick = e => {
-        e.preventDefault();
-        waiterStopped = true;
-        w.remove();
-      };
-      w.appendChild(noBtn);
-    }
-
-    document.body.appendChild(w);
-
-    // typewriter
-    const txt = step.question;
-    let idx = 0;
-    (function typeChar(){
-      qEl.textContent = txt.slice(0, idx++);
-      if (idx <= txt.length) setTimeout(typeChar, 15);
-      else w.classList.add("ready");
-    })();
-
-    // outside click removes only this popup
-    setTimeout(() => {
+  // TYPEWRITER + outside-click advance
+  const txt = step.question;
+  let idx = 0;
+  (function typeChar() {
+    qEl.textContent = txt.slice(0, idx++);
+    if (idx <= txt.length) {
+      setTimeout(typeChar, 15);
+    } else {
+      w.classList.add("ready");
       function outside(e) {
         if (!w.contains(e.target)) {
+          clearTimeout(waiterTimeout);
           w.remove();
           window.removeEventListener("click", outside);
+          waiterIndex++;
+          waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
         }
       }
       window.addEventListener("click", outside);
-    }, 0);
+    }
+  })();
+}
+
+function showPayment() {
+  waiterStopped = true;
+  document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
+
+  // final bill popup
+  const pay = document.createElement("div");
+  pay.className = "popup final-popup";
+  pay.innerHTML = `
+    <p>Pay Liam $${billTotal.toFixed(2)} AUD?</p>
+    <button class="waiter-option pay-button">PAY</button>
+    <a href="#" class="runner-link"><span class="link-text">do a runner</span></a>
+  `;
+  document.body.appendChild(pay);
+
+  // PAY button
+  pay.querySelector(".pay-button").onclick = () => {
+    window.open(`https://paypal.me/liamalexanderquinn/${billTotal.toFixed(2)}`, "_blank");
+    pay.remove();
+    document.getElementById("waiter-bill")?.remove();
+  };
+
+  // DO A RUNNER → call police
+  pay.querySelector(".runner-link").onclick = e => {
+    e.preventDefault();
+    pay.remove();
+    document.getElementById("waiter-bill")?.remove();
+    showPolice();
+  };
+}
+
+function showPolice() {
+  // create overlay
+  if (!document.querySelector(".police-overlay")) {
+    const ov = document.createElement("div");
+    ov.className = "police-overlay";
+    document.body.appendChild(ov);
   }
 
-  function showPayment() {
-    waiterStopped = true;
-    document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
-    const pay = document.createElement("div");
-    pay.className = "popup final-popup";
-    pay.innerHTML = `
-      <p>Pay Liam $${billTotal.toFixed(2)} AUD?</p>
-      <button class="waiter-option pay-button">PAY</button>
-    `;
-    document.body.appendChild(pay);
-    pay.querySelector(".pay-button").onclick = () => {
-      window.open(`https://paypal.me/liamalexanderquinn/${billTotal.toFixed(2)}`, "_blank");
-      pay.remove();
-      document.getElementById("waiter-bill")?.remove();
+  // create police popup
+  const pop = document.createElement("div");
+  pop.className = "popup police-popup";
+  pop.innerHTML = `
+    <p>The police have been called to your location</p>
+    <button class="ok-button">okay</button>
+  `;
+  document.body.appendChild(pop);
+
+  // ok closes just the popup (overlay stays)
+  pop.querySelector(".ok-button").onclick = () => pop.remove();
+}
+
+function showWaiterStep(i) {
+  if (waiterStopped || i >= waiterSteps.length) return;
+  const step = waiterSteps[i];
+  const w    = document.createElement("div");
+  w.className = "popup waiter-popup";
+
+  // question
+  const qEl = document.createElement("p");
+  w.appendChild(qEl);
+
+  // options
+  step.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "waiter-option";
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      clearTimeout(waiterTimeout);
+      w.remove();
+
+      // only add to bill if it's not the final “Yes” step and no special action
+      if (!opt.isFinal && !opt.action) {
+        addToBill(opt.label, opt.cost);
+      }
+
+      // run any ambiance/jazz action
+      if (opt.action) opt.action();
+
+      // final choice → showPayment
+      if (opt.isFinal) return showPayment();
+
+      // otherwise continue
+      waiterIndex++;
+      waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
     };
+    w.appendChild(btn);
+  });
+
+  // “no thanks” always advances
+  if (!step.mandatory) {
+    const noBtn = document.createElement("a");
+    noBtn.className = "waiter-no";
+    noBtn.href = "#";
+    noBtn.innerHTML = `<span class="link-text">no thanks</span>`;
+    noBtn.onclick = e => {
+      e.preventDefault();
+      clearTimeout(waiterTimeout);
+      w.remove();
+      waiterIndex++;
+      waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
+    };
+    w.appendChild(noBtn);
   }
 
-  waiterTimeout = setTimeout(() => showWaiterStep(0), 10000);
+  document.body.appendChild(w);
+
+  // TYPEWRITER + outside-click advance
+  const txt = step.question;
+  let idx = 0;
+  (function typeChar() {
+    qEl.textContent = txt.slice(0, idx++);
+    if (idx <= txt.length) {
+      setTimeout(typeChar, 15);
+    } else {
+      w.classList.add("ready");
+      function outside(e) {
+        if (!w.contains(e.target)) {
+          clearTimeout(waiterTimeout);
+          w.remove();
+          window.removeEventListener("click", outside);
+          waiterIndex++;
+          waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
+        }
+      }
+      window.addEventListener("click", outside);
+    }
+  })();
+}
+
+// kick it off after 10s
+waiterTimeout = setTimeout(() => showWaiterStep(0), 10000);
 });

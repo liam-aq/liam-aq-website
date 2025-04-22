@@ -8,38 +8,45 @@
 </head>
 <body>
 
+  <!-- FULL-SCREEN DIMMER (hidden until .active is added) -->
+  <div id="dim-overlay" class="hidden"></div>
+
+  <!-- JAZZ CONTROLS (hidden until jazzUI.classList.remove('hidden')) -->
+  <div id="jazz-ui" class="hidden">
+    <audio id="jazz-player" src="assets/jazz.mp3"></audio>
+    <button id="jazz-toggle" class="jazz-toggle">pause</button>
+  </div>
+
   <section class="hero">
     <div class="intro">
       <p>
         <span class="intro-start">Hello</span>
         <span class="intro-eyes-wrapper">
-          <span class="eye">
-            <span class="pupil"></span>
-          </span>
-          <span class="eye">
-            <span class="pupil"></span>
-          </span>
+          <span class="eye"><span class="pupil"></span></span>
+          <span class="eye"><span class="pupil"></span></span>
         </span>
         <span class="intro-rest">I am Liam Alexander Quinn, a graphic designer based in Naarm/Melbourne.</span>
-        I design and build websites and brands. Creative people, hospitality businesses, and the broader food and beverage space are my bread and butter, but I'm very open to taking on all sorts of work.
-        I can do motion graphics, video editing, identity design, ad campaigns, and 12 pushups. 
+        I design and build websites and brands. Creative people, hospitality businesses, and the broader food and beverage space are my bread and butter, but I'm very open to taking on all sorts of work. I can do motion graphics, video editing, identity design, ad campaigns, and 12 pushups.
       </p>
       <p>
-        I’m currently freelancing, and taking on new clients.
-        Previously I worked at Weekdays, a branding studio here in Melbourne, and before that at Blackhearts & Sparrows as their lead designer.
-        If you are interested in working together, <a href="mailto:hello@liamalexanderquinn.com"><span class="link-text">send me an email</span></a>.
-        Or feel free to Call For A Quote on (03) 4829 9928.
+        I’m currently freelancing, and taking on new clients. Previously I worked at Weekdays, a branding studio here in Melbourne, and before that at Blackhearts & Sparrows as their lead designer. If you are interested in working together, <a href="mailto:hello@liamalexanderquinn.com"><span class="link-text">send me an email</span></a>. Or feel free to Call For A Quote on (03) 4829 9928.
       </p>
+
+      <!-- BILL (will scroll with .intro) -->
+      <div id="waiter-bill" class="bill"></div>
     </div>
   </section>
 
+  <!-- Floating project thumbnails + popup container -->
   <div class="sites" id="sites-container"></div>
   <div id="popup" class="popup project-popup"></div>
   <div class="global-blur"></div>
 
+  <!-- Scroll Expander -->
+  <div class="scroll-expander"></div>
+
   <!-- Footer -->
   <div class="footer" id="footer">
-    <div class="footer-background"></div>
     <div class="footer-inner">
       <div class="footer-columns">
         <div class="footer-left">
