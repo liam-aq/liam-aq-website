@@ -1,265 +1,229 @@
-// == FULL JS: THUMBNAILS • FOOTER • PARALLAX • EYES • WAITER & BILL ==
+// == FULL JS: THUMBNAILS • FOOTER PARALLAX • EYES • WAITER & BILL ==
 document.addEventListener("DOMContentLoaded", () => {
   // ────────────────────────────────────────────────────────────────
-  // 1) PROJECT THUMBNAILS + POPUPS
+  // 0) shared state & DOM refs
   // ────────────────────────────────────────────────────────────────
-  const popup = document.getElementById('popup');
-  const sitesContainer = document.getElementById('sites-container');
+  const popup = document.getElementById("popup");
+  const sitesContainer = document.getElementById("sites-container");
   document.body.appendChild(popup);
 
+  let activeBlock = null;
+  let isOverPopup = false;
+  const floatCancels = new Set();
+
+  // ────────────────────────────────────────────────────────────────
+  // 1) PROJECT THUMBNAILS → GRID LAYOUT + FLOATING + POPUPS
+  // ────────────────────────────────────────────────────────────────
   const projects = [
-    { name: 'weekdays',      image: 'weekdays.gif',      client: 'Weekdays',      work: 'website',             year: '2025', description: 'A clean and minimal website…',          link: 'https://week-days.com.au/' },
-    { name: 'studio blank',  image: 'studio-blank.gif',  client: 'studio blank',  work: 'website, motion design', year: '2024', description: 'A quirky website for a furniture…',    link: 'https://www.studioblank.com.au/' },
-    { name: 'veraison',      image: 'veraison.png',      client: 'veraison',      work: 'brand, website, print', year: '2025', description: 'A print-turned-digital wine zine.',     link: 'https://www.veraisonmag.com/' },
-    { name: 'claire adey',   image: 'claire-adey.gif',   client: 'claire adey',   work: 'website',             year: '2025', description: 'A portfolio site with a cookies section.', link: 'https://www.claireadey.com/' },
-    { name: 'oishii dry',    image: 'oishii-dry.png',    client: 'Oishii Dry',    work: 'brand, packaging',     year: '2025', description: 'A local yuzu rice lager with Japanese sensibilities.', link: 'https://www.oishiiworld.com.au/' }
+    { name:'weekdays',    image:'weekdays.gif',    client:'Weekdays',       work:'website',           year:'2025', description:'A clean and minimal website, unless you want it not to be. Built for Weekdays at Weekdays.', link:'https://week-days.com.au/' },
+    { name:'studio blank',image:'studio-blank.gif',client:'studio blank',   work:'website, motion design',year:'2024', description:'A quirky website for a furniture studio (via Weekdays).', link:'https://www.studioblank.com.au/' },
+    { name:'veraison',    image:'veraison.png',     client:'veraison',       work:'brand, website, print',  year:'2025', description:'A print-turned-digital wine and culture zine.',                   link:'https://www.veraisonmag.com/' },
+    { name:'claire adey', image:'claire-adey.gif',  client:'claire adey',    work:'website',           year:'2025', description:'A portfolio website for a foodie needs a good cookies section.',    link:'https://www.claireadey.com/' },
+    { name:'oishii dry',  image:'oishii-dry.png',   client:'Oishii Dry',     work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',             link:'https://www.oishiiworld.com.au/' }
   ];
 
-  let activeBlock = null, isOverPopup = false;
+  function layoutThumbnails() {
+    // clear out old floats & blocks
+    floatCancels.forEach(fn => fn());
+    floatCancels.clear();
+    sitesContainer.innerHTML = "";
+    popup.style.display = "none";
 
-  projects.forEach(project => {
-    const block = document.createElement('div');
-    block.classList.add('floating-block');
-    block.style.backgroundImage = `url(images/${project.image})`;
-
-    // random initial position + size
+    // compute grid
     const thumbSize = window.innerWidth <= 728 ? 75 : 120;
-    let x = Math.random() * (sitesContainer.offsetWidth - thumbSize);
-    let y = Math.random() * (sitesContainer.offsetHeight - thumbSize);
-    block.style.cssText += `width:${thumbSize}px;height:${thumbSize}px;left:${x}px;top:${y}px;`;
-    sitesContainer.appendChild(block);
+    const count     = projects.length;
+    const cols      = Math.ceil(Math.sqrt(count));
+    const rows      = Math.ceil(count/cols);
+    const cellW     = sitesContainer.clientWidth  / cols;
+    const cellH     = sitesContainer.clientHeight / rows;
 
-    // floating animation
-    let vx = (Math.random() - 0.5) * 0.5, vy = (Math.random() - 0.5) * 0.5;
-    (function float() {
-      if (!block.classList.contains('paused')) {
-        x += vx; y += vy;
-        if (x < 0 || x > sitesContainer.offsetWidth - thumbSize) vx *= -1;
-        if (y < 0 || y > sitesContainer.offsetHeight - thumbSize) vy *= -1;
-        block.style.left = `${x}px`;
-        block.style.top  = `${y}px`;
-      }
-      requestAnimationFrame(float);
-    })();
+    projects.forEach((project, i) => {
+      const block = document.createElement("div");
+      block.classList.add("floating-block");
+      block.style.backgroundImage = `url(images/${project.image})`;
 
-    // popup builder
-    function showProjectPopup(e) {
-      e.stopPropagation();
-      block.classList.add('paused');
-      activeBlock = block;
-
-      const rect   = block.getBoundingClientRect();
-      const maxW   = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
-      const spaceR = window.innerWidth - rect.right;
-      const spaceL = rect.left;
-      const preferR= spaceR > maxW + 20;
-      const preferL= spaceL > maxW + 20;
-
-      popup.className = 'popup project-popup';
-      popup.innerHTML = `
-        <span class="link-text">${project.client}</span>
-        <span>${project.work}</span>
-        <span>${project.year}</span>
-        <p>${project.description}</p>
-        <a href="${project.link}" target="_blank"><span class="link-text">Visit site</span></a>
+      // position in center of grid cell
+      const col = i % cols, row = Math.floor(i/cols);
+      const x   = col*cellW + (cellW - thumbSize)/2;
+      const y   = row*cellH + (cellH - thumbSize)/2;
+      block.style.cssText += `
+        width:${thumbSize}px;
+        height:${thumbSize}px;
+        left:${x}px;
+        top:${y}px;
       `;
+      sitesContainer.appendChild(block);
 
-      popup.style.cssText += `
-        display:flex;
-        max-width:${maxW}px;
-        left:-9999px; top:-9999px;
-        visibility:hidden; opacity:0;
-      `;
-
-      const pw = popup.offsetWidth;
-      const ph = popup.offsetHeight;
-      const tooLow = rect.bottom + ph > window.innerHeight;
-      const py = tooLow
-        ? rect.bottom + window.pageYOffset - ph
-        : rect.top + window.pageYOffset;
-
-      let px;
-      if (window.innerWidth < 640) {
-        px = rect.left + (rect.width - pw)/2;
-      } else if (preferR) {
-        px = rect.right + 12;
-      } else if (preferL) {
-        px = rect.left - pw - 12;
-      } else {
-        px = rect.left + (rect.width - pw)/2;
-      }
-      px = Math.max(12, Math.min(px, window.innerWidth - pw - 12));
-
-      popup.style.cssText += `
-        left:${px}px;
-        top:${py}px;
-        opacity:1;
-        visibility:visible;
-      `;
-    }
-
-    // desktop hover / mobile tap
-    block.addEventListener('mouseenter', e => {
-      if (window.innerWidth > 728) showProjectPopup(e);
-    });
-    block.addEventListener('click', e => {
-      if (window.innerWidth <= 728) showProjectPopup(e);
-    });
-
-    block.addEventListener('mouseleave', () => {
-      setTimeout(() => {
-        if (!isOverPopup) {
-          popup.style.display = 'none';
-          block.classList.remove('paused');
-          activeBlock = null;
+      // floating animation
+      let vx = (Math.random()-0.5)*0.5;
+      let vy = (Math.random()-0.5)*0.5;
+      let cancelled = false;
+      (function floatLoop(){
+        if(cancelled) return;
+        if(!block.classList.contains("paused")){
+          let nx = parseFloat(block.style.left);
+          let ny = parseFloat(block.style.top);
+          nx += vx; ny += vy;
+          if(nx < 0 || nx > sitesContainer.clientWidth - thumbSize) vx *= -1;
+          if(ny < 0 || ny > sitesContainer.clientHeight - thumbSize) vy *= -1;
+          block.style.left = `${nx}px`;
+          block.style.top  = `${ny}px`;
         }
-      }, 20);
-    });
-  });
+        requestAnimationFrame(floatLoop);
+      })();
+      floatCancels.add(() => cancelled = true);
 
-  popup.addEventListener('mouseenter', () => {
+      // popup handler
+      function showProjectPopup(e) {
+        e.stopPropagation();
+        block.classList.add("paused");
+        activeBlock = block;
+
+        const rect   = block.getBoundingClientRect();
+        const maxW   = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
+        const spaceR = window.innerWidth - rect.right;
+        const spaceL = rect.left;
+        const preferR= spaceR > maxW+20;
+        const preferL= spaceL > maxW+20;
+
+        popup.className = "popup project-popup";
+        popup.innerHTML = `
+          <span class="link-text">${project.client}</span>
+          <span>${project.work}</span>
+          <span>${project.year}</span>
+          <p>${project.description}</p>
+          <a href="${project.link}" target="_blank"><span class="link-text">Visit site</span></a>
+        `;
+
+        // offscreen to measure
+        popup.style.cssText += `
+          display:flex;
+          max-width:${maxW}px;
+          left:-9999px; top:-9999px;
+          visibility:hidden; opacity:0;
+        `;
+
+        const pw = popup.offsetWidth, ph = popup.offsetHeight;
+        const tooLow = rect.bottom + ph > window.innerHeight;
+        const py = tooLow
+          ? rect.bottom + window.pageYOffset - ph
+          : rect.top    + window.pageYOffset;
+        let px;
+        if(window.innerWidth < 640) {
+          px = rect.left + (rect.width - pw)/2;
+        } else if(preferR) {
+          px = rect.right + 12;
+        } else if(preferL) {
+          px = rect.left - pw - 12;
+        } else {
+          px = rect.left + (rect.width - pw)/2;
+        }
+        px = Math.max(12, Math.min(px, window.innerWidth - pw -12));
+
+        // show it
+        popup.style.cssText += `
+          left:${px}px;
+          top:${py}px;
+          opacity:1; visibility:visible;
+        `;
+      }
+
+      block.addEventListener("mouseenter", e => {
+        if(window.innerWidth > 728) showProjectPopup(e);
+      });
+      block.addEventListener("click", e => {
+        if(window.innerWidth <= 728) showProjectPopup(e);
+      });
+      block.addEventListener("mouseleave", () => {
+        setTimeout(() => {
+          if(!isOverPopup) {
+            popup.style.display = "none";
+            block.classList.remove("paused");
+            activeBlock = null;
+          }
+        }, 20);
+      });
+    });
+  }
+
+  // initial layout + live resizes
+  layoutThumbnails();
+  window.addEventListener("resize", layoutThumbnails);
+
+  // keep popup from hiding while hovered
+  popup.addEventListener("mouseenter", () => {
     isOverPopup = true;
-    if (activeBlock) activeBlock.classList.add('paused');
+    activeBlock?.classList.add("paused");
   });
-  popup.addEventListener('mouseleave', () => {
+  popup.addEventListener("mouseleave", () => {
     isOverPopup = false;
-    if (activeBlock) activeBlock.classList.remove('paused');
-    popup.style.display = 'none';
+    activeBlock?.classList.remove("paused");
+    popup.style.display = "none";
     activeBlock = null;
   });
 
   // ────────────────────────────────────────────────────────────────
-  // 2) FOOTER FADE ON SCROLL
+  // 2) FOOTER PARALLAX SLIDE (no fade)
   // ────────────────────────────────────────────────────────────────
-
-  window.addEventListener('scroll', () => {
-  const footer    = document.getElementById('footer');
-  const scrollY   = window.scrollY || window.pageYOffset;
-  const docH      = document.documentElement.scrollHeight;
-  const viewH     = window.innerHeight;
-  const maxScroll = docH - viewH;
-
-  // fire at just 30% down the page instead of waiting to the bottom
-  const progress = maxScroll > 0
-    ? Math.min(scrollY / (maxScroll * 0.3), 1)
-    : 1;
-
-  footer.style.opacity       = progress;
-  footer.style.transform     = `translateY(${(1 - progress) * 100}%)`;
-  footer.style.pointerEvents = progress > 0.03 ? 'auto' : 'none';
-});
+  window.addEventListener("scroll", () => {
+    const footer = document.getElementById("footer");
+    const trigger = window.innerHeight * 0.3;    // first 30% of scroll
+    const sc = Math.min(window.scrollY, trigger);
+    const pct = sc / trigger;                   // 0 → 1
+    const y = 100 - pct*100;                     // 100% → 0%
+    footer.style.transform = `translateY(${y}%)`;
+    footer.style.pointerEvents = pct > 0.1 ? "auto" : "none";
+  });
 
   // ────────────────────────────────────────────────────────────────
-  // 3) PARALLAX ON THUMBNAILS
+  // 3) THUMBNAILS PARALLAX BEHIND (gentle)
   // ────────────────────────────────────────────────────────────────
-  window.addEventListener('scroll', () => {
-    const parallax = document.querySelector('.sites');
-    if (parallax) parallax.style.transform = `translateY(${window.scrollY * 0.05}px)`;
+  window.addEventListener("scroll", () => {
+    document.querySelector(".sites")?.style.setProperty(
+      "transform",
+      `translateY(${window.scrollY*0.05}px)`
+    );
   });
 
   // ────────────────────────────────────────────────────────────────
   // 4) EYE TRACKING + BLINK
   // ────────────────────────────────────────────────────────────────
-  const eyes = document.querySelectorAll('span.intro-eyes-wrapper .eye');
+  const eyes = document.querySelectorAll("span.intro-eyes-wrapper .eye");
   eyes.forEach(eye => {
-    const line = document.createElement('div');
-    line.className = 'blink-line';
+    const line = document.createElement("div");
+    line.className = "blink-line";
     eye.appendChild(line);
   });
-
   function trackPupils(e) {
     eyes.forEach(eye => {
-      const pupil = eye.querySelector('.pupil');
-      const rect  = eye.getBoundingClientRect();
-      const dx    = e.clientX - (rect.left + rect.width/2);
-      const dy    = e.clientY - (rect.top  + rect.height/2);
-      const angle = Math.atan2(dy, dx);
-      const moveX = Math.cos(angle)*rect.width * 0.35;
-      const moveY = Math.sin(angle)*rect.height*0.15 + 0.1*rect.height;
+      const pupil = eye.querySelector(".pupil"),
+            rect  = eye.getBoundingClientRect(),
+            dx    = e.clientX - (rect.left + rect.width/2),
+            dy    = e.clientY - (rect.top  + rect.height/2),
+            ang   = Math.atan2(dy, dx),
+            moveX = Math.cos(ang)*rect.width*0.35,
+            moveY = Math.sin(ang)*rect.height*0.15 + 0.1*rect.height;
       pupil.style.left = `calc(50% + ${moveX}px)`;
       pupil.style.top  = `calc(50% + ${moveY}px)`;
     });
   }
-
   function blinkEye(eye) {
-    eye.classList.add('blinking');
-    setTimeout(() => eye.classList.remove('blinking'), 200);
+    eye.classList.add("blinking");
+    setTimeout(() => eye.classList.remove("blinking"), 200);
   }
-
   function blinkAll() {
     eyes.forEach(blinkEye);
   }
-
-  document.addEventListener('mousemove', trackPupils);
-  setInterval(() => { if (Math.random()<0.3) blinkAll(); }, 2500);
+  document.addEventListener("mousemove", trackPupils);
+  setInterval(() => { if(Math.random() < 0.3) blinkAll(); }, 2500);
 
   // ────────────────────────────────────────────────────────────────
   // 5) WAITER SEQUENCE • BILL • FINAL PAYPAL
   // ────────────────────────────────────────────────────────────────
-  let waiterIndex   = 0,
-      waiterStopped = false,
-      waiterTimeout = null,
-      billTotal     = 0;
-
-  const waiterSteps = [
-    {
-      question: "Welcome to Liam's website. I'll be taking care of you today. Can I start you with any still or sparkling water?",
-      options: [
-        { label:'STILL',     cost:0 },
-        { label:'SPARKLING', cost:3.5 }
-      ],
-      mandatory: true
-    },
-    {
-      question: "How are we settling in? Can I interest you in a freshly shucked oyster and a glass of chablis? Or perhaps some manchego croquetas, paprika aioli and a crisp lager?",
-      options:[
-        { label:'OYSTER & CHABLIS', cost:15.5 },
-        { label:'CROQUETAS & BEER', cost:13.5 }
-      ]
-    },
-    {
-      question: "Are we feeling like some more snacks? We have a lovely simple tart of snow crab and chives, and a beautiful kangaroo tataki brushed with our house dashi.",
-      options:[
-        { label:'CRAB TART',       cost:21 },
-        { label:'KANGAROO TATAKI', cost:19 }
-      ]
-    },
-    {
-      question: "Can I get you another drink at all? We do a killer rye old fashioned. There's also a bouncy new Tasmanian gamay on the list.",
-      options:[
-        { label:'RYE OLD FASH', cost:14 },
-        { label:'GAMAY',       cost:11 }
-      ]
-    },
-    {
-      question: "Are we feeling ready for mains? Our pie of the evening is ethically hunted venison stewed in red wine and herbs de Provence. And tonight's fish is a swordfish steak cooked in brown butter, served on sauce vierge.",
-      options:[
-        { label:'DEER PIE',   cost:21 },
-        { label:'SWORDFISH',  cost:24 }
-      ]
-    },
-    {
-      question: "Room for dessert? We have a simple lemon tart, or Crêpes Suzette finished tableside if you feel like a show.",
-      options:[
-        { label:'LEMON TART',     cost:9 },
-        { label:'CRÊPES SUZETTE', cost:11 }
-      ]
-    },
-    {
-      question: "Can I offer you any tea, coffee, or a complimentary cigarette to round out the meal?",
-      options:[
-        { label:'TEA',       cost:3 },
-        { label:'COFFEE',    cost:4 },
-        { label:'CIGARETTE', cost:0 }
-      ]
-    },
-    {
-      question: "Shall I bring you the cheque?",
-      options:[
-        { label:'YES', cost:0, isFinal:true }
-      ]
-    }
-  ];
+  let waiterIndex    = 0,
+      waiterStopped  = false,
+      waiterTimeout  = null,
+      billTotal      = 0;
 
   function addToBill(item, cost) {
     billTotal += cost;
@@ -270,21 +234,21 @@ document.addEventListener("DOMContentLoaded", () => {
       bill.className = "bill";
       document.body.appendChild(bill);
     }
-    // remove old settle‑up link
+    // remove old link
     bill.querySelector(".settle-link")?.remove();
-    // header
+    // add new line
+    const line = document.createElement("div");
+    line.className = "bill-item";
+    line.textContent = `${item} – ${cost === 0 ? "FREE" : `$${cost.toFixed(2)}`}`;
+    bill.appendChild(line);
+    // ensure header
     if (!bill.querySelector(".bill-header")) {
       const hdr = document.createElement("span");
       hdr.className = "bill-header";
       hdr.textContent = "BILL";
       bill.prepend(hdr, document.createElement("br"));
     }
-    // item line
-    const line = document.createElement("div");
-    line.className = "bill-item";
-    line.textContent = `${item} – ${cost === 0 ? "FREE" : `$${cost.toFixed(2)}`}`;
-    bill.appendChild(line);
-    // final settle‑up
+    // append settle‑up
     const settle = document.createElement("a");
     settle.href = "#";
     settle.className = "settle-link";
@@ -292,20 +256,30 @@ document.addEventListener("DOMContentLoaded", () => {
     settle.onclick = e => {
       e.preventDefault();
       waiterStopped = true;
-      document.querySelectorAll(".popup.waiter-popup").forEach(p=>p.remove());
+      document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
       showPayment();
     };
     bill.appendChild(settle);
   }
+
+  const waiterSteps = [
+    { question:"Welcome to Liam's website. I'll be taking care of you today. Can I start you with any still or sparkling water?", options:[{label:'STILL',cost:0},{label:'SPARKLING',cost:3.5}], mandatory:true },
+    { question:"How are we settling in? Can I interest you in a freshly shucked oyster and a glass of chablis? Or perhaps some manchego croquetas, paprika aioli and a crisp lager?", options:[{label:'OYSTER & CHABLIS',cost:15.5},{label:'CROQUETAS & BEER',cost:13.5}] },
+    { question:"Are we feeling like some more snacks? We have a lovely simple tart of snow crab and chives, and a beautiful kangaroo tataki brushed with our house dashi.", options:[{label:'CRAB TART',cost:21},{label:'KANGAROO TATAKI',cost:19}] },
+    { question:"Can I get you another drink at all? We do a killer rye old fashioned. There's also a bouncy new Tasmanian gamay on the list.", options:[{label:'RYE OLD FASH',cost:14},{label:'GAMAY',cost:11}] },
+    { question:"Are we feeling ready for mains? The specials tonight are to die for. Our pie of the evening is ethically hunted venison stewed in red wine and herbs de Provence. And tonight's fish is a swordfish steak cooked in brown butter, served on sauce vierge.", options:[{label:'DEER PIE',cost:21},{label:'SWORDFISH',cost:24}] },
+    { question:"Room for dessert? Go on, just take a peep. Treat yourself. We have a very simple lemon tart, and we're also doing a Crêpes Suzette finished tableside if you feel like a bit of a show.", options:[{label:'LEMON TART',cost:9},{label:'CRÊPES SUZETTE',cost:11}] },
+    { question:"Can I offer you any tea, coffee, or a complimentary cigarette to round out the meal?", options:[{label:'TEA',cost:3},{label:'COFFEE',cost:4},{label:'CIGARETTE',cost:0}] },
+    { question:"Shall I bring you the cheque?", options:[{label:'YES',cost:0,isFinal:true}] }
+  ];
 
   function showWaiterStep(i) {
     if (waiterStopped || i >= waiterSteps.length) return;
     const step = waiterSteps[i];
     const w = document.createElement("div");
     w.className = "popup waiter-popup";
-
-    const questionEl = document.createElement("p");
-    w.appendChild(questionEl);
+    const qEl = document.createElement("p");
+    w.appendChild(qEl);
 
     step.options.forEach(opt => {
       const btn = document.createElement("button");
@@ -316,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         addToBill(opt.label, opt.cost);
         if (opt.isFinal) return showPayment();
         waiterIndex++;
-        waiterTimeout = setTimeout(()=>showWaiterStep(waiterIndex), 20000);
+        waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
       };
       w.appendChild(btn);
     });
@@ -326,37 +300,40 @@ document.addEventListener("DOMContentLoaded", () => {
       noBtn.className = "waiter-no";
       noBtn.href = "#";
       noBtn.innerHTML = `<span class="link-text">no thanks</span>`;
-      noBtn.onclick = e => { e.preventDefault(); waiterStopped = true; w.remove(); };
+      noBtn.onclick = e => {
+        e.preventDefault();
+        waiterStopped = true;
+        w.remove();
+      };
       w.appendChild(noBtn);
     }
 
     document.body.appendChild(w);
 
     // typewriter
-    const text = step.question;
+    const txt = step.question;
     let idx = 0;
-    function typeChar() {
-      questionEl.textContent = text.slice(0, idx++);
-      if (idx <= text.length) setTimeout(typeChar, 15);
+    (function typeChar(){
+      qEl.textContent = txt.slice(0, idx++);
+      if (idx <= txt.length) setTimeout(typeChar, 15);
       else w.classList.add("ready");
-    }
-    typeChar();
+    })();
 
-    // outside-click closes this popup only
+    // outside click removes only this popup
     setTimeout(() => {
-      const outside = e => {
+      function outside(e) {
         if (!w.contains(e.target)) {
           w.remove();
           window.removeEventListener("click", outside);
         }
-      };
+      }
       window.addEventListener("click", outside);
     }, 0);
   }
 
   function showPayment() {
     waiterStopped = true;
-    document.querySelectorAll(".popup.waiter-popup").forEach(p=>p.remove());
+    document.querySelectorAll(".popup.waiter-popup").forEach(p => p.remove());
     const pay = document.createElement("div");
     pay.className = "popup final-popup";
     pay.innerHTML = `
@@ -371,6 +348,5 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // start waiter after 10s
   waiterTimeout = setTimeout(() => showWaiterStep(0), 10000);
 });
