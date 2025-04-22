@@ -517,3 +517,24 @@ body {
   background-color: #000;
   color: var(--accent);
 }
+
+/* ─── TWEAK MOBILE FOOTER & SCROLL ─────────────────────────────────── */
+@media (max-width: 728px) {
+  /* cut the “pull” buffer in half so you don’t have to drag so far */
+  html, body {
+    padding-bottom: 50vh !important;
+  }
+
+  /* force footer columns both 50% width, left‑aligned */
+  .footer-left,
+  .footer-right {
+    flex: 0 0 50%;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  /* ensure footer hides when you scroll up just a little */
+  .footer {
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+}

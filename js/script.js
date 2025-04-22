@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   footer.style.opacity       = progress;
   footer.style.transform     = `translateY(${(1 - progress) * 100}%)`;
-  footer.style.pointerEvents = progress > 0.05 ? 'auto' : 'none';
+  footer.style.pointerEvents = progress > 0.03 ? 'auto' : 'none';
 });
 
   // ────────────────────────────────────────────────────────────────
