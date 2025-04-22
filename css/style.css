@@ -200,10 +200,9 @@ body {
 .footer-inner {
   position: relative;
   width: 100vw;
-  height: 100vh;
   display: flex;
   align-items: flex-end;
-  padding: 20px 20px 20px 20px; /* 20px bottom */
+  padding: 20px;               /* 20px on all sides, including bottom */
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -256,6 +255,18 @@ body {
 .footer-left a:hover .link-text::after,
 .footer-right a:hover .link-text::after {
   transform: scaleX(1);
+}
+
+/* remove extra <p> margins in the footer so padding:20px is the only space */
+.footer-left p,
+.footer-right p {
+  margin: 0 0 0.5em; /* or margin: 0; if you want no space between lines */
+}
+
+/* ensure the very last paragraph sits flush above the padding */
+.footer-left p:last-child,
+.footer-right p:last-child {
+  margin-bottom: 0;
 }
 
 /* ─── SELECTION ───────────────────────────────────────────────────────────── */
@@ -450,7 +461,13 @@ body {
   width: 90vw !important;
   max-width: none !important;
   padding: 30px !important;
+    /* Make the footer text only use the left half of the viewport */
+    .footer-left {
+      width: 50%;
+    }
+  
 }
+
 
 /* ——— Give more scroll room on mobile so footer can pull fully up ——— */
 .scroll-expander {

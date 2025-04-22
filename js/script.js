@@ -3,56 +3,40 @@ document.addEventListener("DOMContentLoaded", () => {
   // ────────────────────────────────────────────────────────────────
   // 1) PROJECT THUMBNAILS + POPUPS
   // ────────────────────────────────────────────────────────────────
-  const popup = document.getElementById("popup");
-  const sitesContainer = document.getElementById("sites-container");
-  if (!sitesContainer) {
-    console.error("No #sites-container found");
-    return;
-  }
-  // make sure popup exists
-  if (!popup) {
-    console.error("No #popup found");
-    return;
-  }
+  const popup = document.getElementById('popup');
+  const sitesContainer = document.getElementById('sites-container');
   document.body.appendChild(popup);
 
   const projects = [
     {
-      name: "weekdays",
-      image: "weekdays.png",
-      client: "Weekdays",
-      work: "website",
-      year: "2025",
-      description: "Brand and web work across hospitality clients.",
-      link: "https://week-days.com.au/",
+      name: 'weekdays', image: 'weekdays.png', client: 'Weekdays',
+      work: 'website', year: '2025',
+      description: 'Brand and web work across hospitality clients.',
+      link: 'https://week-days.com.au/'
     },
     {
-      name: "veraison",
-      image: "veraison.png",
-      client: "veraison",
-      work: "brand, website, print",
-      year: "2025",
-      description: "A print-turned-digital wine and culture zine.",
-      link: "https://www.veraisonmag.com/",
+      name: 'veraison', image: 'veraison.png', client: 'veraison',
+      work: 'brand, website, print', year: '2025',
+      description: 'A print-turned-digital wine and culture zine.',
+      link: 'https://www.veraisonmag.com/'
     },
     {
-      name: "oishii dry",
-      image: "oishii-dry.png",
-      client: "Oishii Dry",
-      work: "brand, website, packaging",
-      year: "2025",
-      description: "A local yuzu rice lager with Japanese sensibilities.",
-      link: "https://www.oishiiworld.com.au/",
-    },
+      name: 'oishii dry', image: 'oishii-dry.png', client: 'Oishii Dry',
+      work: 'brand, website, packaging', year: '2025',
+      description: 'A local yuzu rice lager with Japanese sensibilities.',
+      link: 'https://www.oishiiworld.com.au/'
+    }
   ];
 
   let activeBlock = null;
   let isOverPopup = false;
 
-  projects.forEach((project) => {
-    const block = document.createElement("div");
-    block.classList.add("floating-block");
+  projects.forEach(project => {
+    const block = document.createElement('div');
+    block.classList.add('floating-block');
     block.style.backgroundImage = `url(images/${project.image})`;
+
+    // random initial position
     const thumbSize = window.innerWidth <= 728 ? 75 : 120;
     let x = Math.random() * (sitesContainer.offsetWidth - thumbSize);
     let y = Math.random() * (sitesContainer.offsetHeight - thumbSize);
@@ -64,35 +48,35 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     sitesContainer.appendChild(block);
 
+    // floating animation
     let vx = (Math.random() - 0.5) * 0.5;
     let vy = (Math.random() - 0.5) * 0.5;
-
     (function float() {
-      if (!block.classList.contains("paused")) {
-        x += vx;
-        y += vy;
+      if (!block.classList.contains('paused')) {
+        x += vx; y += vy;
         if (x < 0 || x > sitesContainer.offsetWidth - thumbSize) vx *= -1;
         if (y < 0 || y > sitesContainer.offsetHeight - thumbSize) vy *= -1;
         block.style.left = `${x}px`;
-        block.style.top = `${y}px`;
+        block.style.top  = `${y}px`;
       }
       requestAnimationFrame(float);
     })();
 
-    block.addEventListener("mouseenter", () => {
-      block.classList.add("paused");
-      if (activeBlock !== block) popup.style.display = "none";
+    // shared popup logic
+    function showProjectPopup(e) {
+      e.stopPropagation();
+      block.classList.add('paused');
       activeBlock = block;
 
-      // build & position the popup
+      // build popup content
       const rect = block.getBoundingClientRect();
-      const popupMaxW = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
-      const spaceRight = window.innerWidth - rect.right;
-      const spaceLeft = rect.left;
-      const preferRight = spaceRight > popupMaxW + 20;
-      const preferLeft = spaceLeft > popupMaxW + 20;
+      const maxW = window.innerWidth < 640 ? window.innerWidth * 0.9 : 300;
+      const spaceR = window.innerWidth - rect.right;
+      const spaceL = rect.left;
+      const preferR = spaceR > maxW + 20;
+      const preferL = spaceL > maxW + 20;
 
-      popup.className = "popup project-popup";
+      popup.className = 'popup project-popup';
       popup.innerHTML = `
         <span class="link-text">${project.client}</span>
         <span>${project.work}</span>
@@ -100,52 +84,71 @@ document.addEventListener("DOMContentLoaded", () => {
         <p>${project.description}</p>
         <a href="${project.link}" target="_blank"><span class="link-text">Visit site</span></a>
       `;
-      // offscreen measure
+
+      // offscreen to measure
       popup.style.cssText += `
-        display:flex;
-        max-width:${popupMaxW}px;
-        left:-9999px; top:-9999px;
-        visibility:hidden; opacity:0;
+        display: flex;
+        max-width: ${maxW}px;
+        left: -9999px; top: -9999px;
+        visibility: hidden;
+        opacity: 0;
       `;
-      const { width, height } = popup.getBoundingClientRect();
-      const tooLow = rect.bottom + height > window.innerHeight;
-      const popupY = tooLow
-        ? rect.bottom + window.pageYOffset - height
+
+      // measure & position
+      const pw = popup.offsetWidth;
+      const ph = popup.offsetHeight;
+      const tooLow = rect.bottom + ph > window.innerHeight;
+      const py = tooLow
+        ? rect.bottom + window.pageYOffset - ph
         : rect.top + window.pageYOffset;
-      let popupX = window.innerWidth < 640
-        ? rect.left + (rect.width - width) / 2
-        : preferRight
-          ? rect.right + 12
-          : preferLeft
-            ? rect.left - width - 12
-            : rect.left + (rect.width - width) / 2;
-      popupX = Math.max(12, Math.min(popupX, window.innerWidth - width - 12));
+      let px;
+      if (window.innerWidth < 640) {
+        px = rect.left + (rect.width - pw) / 2;
+      } else if (preferR) {
+        px = rect.right + 12;
+      } else if (preferL) {
+        px = rect.left - pw - 12;
+      } else {
+        px = rect.left + (rect.width - pw) / 2;
+      }
+      px = Math.max(12, Math.min(px, window.innerWidth - pw - 12));
+
+      // show it
       popup.style.cssText += `
-        left:${popupX}px;
-        top:${popupY}px;
-        opacity:1; visibility:visible;
+        left: ${px}px;
+        top: ${py}px;
+        opacity: 1;
+        visibility: visible;
       `;
+    }
+
+    // desktop: hover, mobile: tap
+    block.addEventListener('mouseenter', e => {
+      if (window.innerWidth > 728) showProjectPopup(e);
+    });
+    block.addEventListener('click', e => {
+      if (window.innerWidth <= 728) showProjectPopup(e);
     });
 
-    block.addEventListener("mouseleave", () => {
+    block.addEventListener('mouseleave', () => {
       setTimeout(() => {
         if (!isOverPopup) {
-          popup.style.display = "none";
-          block.classList.remove("paused");
+          popup.style.display = 'none';
+          block.classList.remove('paused');
           activeBlock = null;
         }
       }, 20);
     });
   });
 
-  popup.addEventListener("mouseenter", () => {
+  popup.addEventListener('mouseenter', () => {
     isOverPopup = true;
-    if (activeBlock) activeBlock.classList.add("paused");
+    if (activeBlock) activeBlock.classList.add('paused');
   });
-  popup.addEventListener("mouseleave", () => {
+  popup.addEventListener('mouseleave', () => {
     isOverPopup = false;
-    if (activeBlock) activeBlock.classList.remove("paused");
-    popup.style.display = "none";
+    if (activeBlock) activeBlock.classList.remove('paused');
+    popup.style.display = 'none';
     activeBlock = null;
   });
 
@@ -174,41 +177,42 @@ document.addEventListener("DOMContentLoaded", () => {
   // ────────────────────────────────────────────────────────────────
   // 4) EYE TRACKING + BLINK + WINK + JIGGLE
   // ────────────────────────────────────────────────────────────────
-  const eyes = document.querySelectorAll("span.intro-eyes-wrapper .eye");
-  eyes.forEach((eye) => {
-    const blinkLine = document.createElement("div");
-    blinkLine.className = "blink-line";
-    eye.appendChild(blinkLine);
+  const eyes = document.querySelectorAll('span.intro-eyes-wrapper .eye');
+  eyes.forEach(eye => {
+    const line = document.createElement('div');
+    line.className = 'blink-line';
+    eye.appendChild(line);
   });
 
   function trackPupils(e) {
-    eyes.forEach((eye) => {
-      const pupil = eye.querySelector(".pupil");
-      const rect = eye.getBoundingClientRect();
+    eyes.forEach(eye => {
+      const pupil = eye.querySelector('.pupil');
+      const rect  = eye.getBoundingClientRect();
       const dx = e.clientX - (rect.left + rect.width / 2);
-      const dy = e.clientY - (rect.top + rect.height / 2);
+      const dy = e.clientY - (rect.top  + rect.height / 2);
       const angle = Math.atan2(dy, dx);
-      const moveX = Math.cos(angle) * rect.width * 0.35;
+      const moveX = Math.cos(angle) * rect.width  * 0.35;
       const moveY = Math.sin(angle) * rect.height * 0.15 + 0.1 * rect.height;
       pupil.style.left = `calc(50% + ${moveX}px)`;
-      pupil.style.top = `calc(50% + ${moveY}px)`;
+      pupil.style.top  = `calc(50% + ${moveY}px)`;
     });
   }
+
   function blinkEye(eye) {
-    eye.classList.add("blinking");
-    setTimeout(() => eye.classList.remove("blinking"), 200);
+    eye.classList.add('blinking');
+    setTimeout(() => eye.classList.remove('blinking'), 200);
   }
-  function blinkAll() { eyes.forEach(blinkEye); }
-  function winkRight() { if (eyes[1]) blinkEye(eyes[1]); }
-  function jiggle() {
-    eyes.forEach((eye) => {
-      eye.style.transition = "transform 0.1s";
-      eye.style.transform = "translateY(-1px)";
-      setTimeout(() => (eye.style.transform = "translateY(0)"), 100);
+
+  function blinkAll() {
+    eyes.forEach(blinkEye);
+    eyes.forEach(eye => {
+      eye.style.transform = 'translateY(-1px)';
+      setTimeout(() => eye.style.transform = 'translateY(0)', 100);
     });
   }
-  document.addEventListener("mousemove", trackPupils);
-  setInterval(() => { if (Math.random() < 0.3) { blinkAll(); jiggle(); } }, 2000);
+
+  document.addEventListener('mousemove', trackPupils);
+  setInterval(() => { if (Math.random() < 0.3) blinkAll(); }, 2500);
 
   // ────────────────────────────────────────────────────────────────
   // 5) WAITER SEQUENCE • BILL • FINAL PAYPAL
