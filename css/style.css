@@ -492,3 +492,14 @@ body {
 .popup.project-popup a:hover .link-text::after {
   transform: scaleX(1);
 }
+
+@media (max-width: 728px) {
+  /* Apply to all popups: project, waiter, final */
+  .popup {
+    width: 80vw !important;
+    max-width: none !important;
+    padding: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+}
