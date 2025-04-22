@@ -38,7 +38,13 @@ html, body {
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  touch-action: auto;
+}
+
+/* buffer so footer can scroll fully into view without phantom scrollbar */
+body::after {
+  content: "";
+  display: block;
+  height: 100vh;
 }
 
 body {
@@ -51,6 +57,7 @@ body {
 }
 
 /* ─── HERO & INTRO ─────────────────────────────────────────────────────────── */
+
 .intro a {
   color: inherit;
   text-decoration: none;
@@ -58,8 +65,8 @@ body {
 }
 
 .intro a .link-text {
-  position: relative;
   display: inline-block;
+  position: relative;
 }
 
 .intro a .link-text::after {
@@ -126,27 +133,27 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: none; /* tracking driven by JS */
+  transition: none;
 }
 
-/* blink-line inside eyes */
 .blink-line {
   display: none;
   position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 1.5px;
+  top: 50%; left: 0;
+  width: 100%; height: 1.5px;
   background: #000;
   transform: translateY(-50%);
 }
+
 .eye.blinking {
   background: transparent;
   border-color: transparent;
 }
+
 .eye.blinking .pupil {
   display: none;
 }
+
 .eye.blinking .blink-line {
   display: block;
 }
@@ -155,10 +162,8 @@ body {
 
 .sites {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   overflow: hidden;
   z-index: 3;
   pointer-events: none;
@@ -166,13 +171,16 @@ body {
 
 .floating-block {
   position: absolute;
-  width: 120px;
-  height: 120px;
+  width: 120px; height: 120px;
   background-size: cover;
   background-position: center;
   pointer-events: auto;
 }
-.floating-block.paused { animation-play-state: paused; }
+
+.floating-block.paused {
+  animation-play-state: paused;
+}
+
 .floating-block.dimmed {
   filter: grayscale(100%);
   transition: filter 0.3s ease;
@@ -198,54 +206,38 @@ body {
   box-sizing: border-box;
 }
 
-/* ─── SCROLL EXPANDER ─────────────────────────────────────────────────────── */
-
-.scroll-expander {
-  height: 40vh;
-}
-
-/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
-
-/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
-
 /* ─── FOOTER ───────────────────────────────────────────────────────────────── */
 
 .footer {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  bottom: 0; left: 0;
+  width: 100vw; height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   padding-bottom: 20px;
   box-sizing: border-box;
-  opacity: 0;
+  background: var(--footer-bg);
   transform: translateY(100%);
   pointer-events: none;
   z-index: 10;
-  background: var(--footer-bg);
-
-
-  /* faster transition */
-  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  /* only slide transform — no opacity fade */
+  transition: transform 0.15s ease-out;
 }
 
-/* knock out the gradient layer completely */
 .footer-background {
   display: none !important;
 }
 
 .footer-inner {
   width: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 20px 20px;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
   color: #000;
-  display: flex;
-  align-items: flex-end;
-  padding: 0 20px;
   box-sizing: border-box;
 }
 
@@ -258,23 +250,21 @@ body {
 .footer-left {
   flex: 0 0 50%;
   line-height: 1.4;
-  text-align: left;
 }
 
 .footer-right {
   flex: 0 0 auto;
   margin-left: 20px;
   line-height: 1.4;
-  text-align: left;
 }
 
-/* link underline animation */
 .footer-left a,
 .footer-right a {
   position: relative;
   color: inherit;
   text-decoration: none;
 }
+
 .footer-left a .link-text::after,
 .footer-right a .link-text::after {
   content: '';
@@ -286,32 +276,25 @@ body {
   transform-origin: left;
   transition: transform 0.3s ease;
 }
+
 .footer-left a:hover .link-text::after,
 .footer-right a:hover .link-text::after {
   transform: scaleX(1);
 }
 
-/* mobile columns fallback */
 @media (max-width: 728px) {
-  .footer-left  { flex: 0 0 50%; }
-  .footer-right { flex: 0 0 50%; margin-left: 0; }
-}
-
-/* ─── GLOBAL BLUR LAYER ───────────────────────────────────────────────────── */
-
-.global-blur {
-  display: none;
-  position: fixed; inset: 0;
-  z-index: 2;
-  pointer-events: none;
+  .footer-left,
+  .footer-right {
+    flex: 0 0 100%;
+    margin-left: 0;
+  }
 }
 
 /* ─── BILL ─────────────────────────────────────────────────────────────────── */
 
 .bill {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 20px; right: 20px;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -340,6 +323,7 @@ body {
   color: inherit;
   text-decoration: none;
 }
+
 .bill a.settle-link .link-text::after {
   content: '';
   position: absolute;
@@ -350,6 +334,7 @@ body {
   transform-origin: left;
   transition: transform 0.3s ease;
 }
+
 .bill a.settle-link:hover .link-text::after {
   transform: scaleX(1);
 }
@@ -358,9 +343,8 @@ body {
 
 .popup.waiter-popup {
   position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 40%; left: 50%;
+  transform: translate(-50%,-50%);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -396,6 +380,7 @@ body {
   text-align: center;
   transition: all 0.2s ease;
 }
+
 .waiter-option:hover {
   background: #000;
   color: #fff;
@@ -403,11 +388,11 @@ body {
 
 .waiter-no {
   align-self: center;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
   position: relative;
+  color: inherit;
+  text-decoration: none;
 }
+
 .waiter-no .link-text::after {
   content: '';
   position: absolute;
@@ -418,11 +403,11 @@ body {
   transform-origin: left;
   transition: transform 0.3s ease;
 }
+
 .waiter-no:hover .link-text::after {
   transform: scaleX(1);
 }
 
-/* CSS: hide buttons completely until “ready” */
 .popup.waiter-popup .waiter-option,
 .popup.waiter-popup .waiter-no {
   opacity: 0;
@@ -440,9 +425,8 @@ body {
 
 .popup.final-popup {
   position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 40%; left: 50%;
+  transform: translate(-50%,-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -455,8 +439,8 @@ body {
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
-  box-sizing: border-box;
   text-align: center;
+  box-sizing: border-box;
   z-index: 9999;
 }
 
@@ -471,6 +455,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .popup.final-popup .pay-button:hover {
   background: #000;
   color: #fff;
@@ -484,56 +469,36 @@ body {
   .floating-block { width: 75px; height: 75px; }
   .popup.project-popup { max-width: 240px; }
   .popup.waiter-popup,
-  .popup.final-popup { padding: 40px; width: auto; max-width: calc(100% - 120px); }
-  .footer-left { width: 70%; }
-  .footer-right { width: 30%; margin-left: 0; }
-  /* ——— Mobile waiter popup ——— */
-.popup.waiter-popup {
-  width: 90vw !important;
-  max-width: none !important;
-  padding: 30px !important;
-    /* Make the footer text only use the left half of the viewport */
-    .footer-left {
-      width: 50%;
-    }
-  
+  .popup.final-popup {
+    width: 80vw !important;
+    max-width: none !important;
+    padding: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  .footer-left,
+  .footer-right {
+    flex: 0 0 100%;
+    margin-left: 0;
+  }
 }
 
+/* ─── PROJECT‑POPUP LINKS ────────────────────────────────────────────────── */
 
-/* ——— Give more scroll room on mobile so footer can pull fully up ——— */
-.scroll-expander {
-  height: 60vh !important;
-}
-
-/* ——— Enlarge eyes for mobile and desktop ——— */
-.intro-eyes-wrapper .eye {
-  width: 0.9em !important;
-  height: 0.6em !important;
-}
-}
-
-
-/* ───────────────────────────────────────────────────────
-   Project‑popup links: no default underline, animated only
-───────────────────────────────────────────────────────── */
 .popup.project-popup a {
-  color: inherit;           /* match surrounding text */
-  text-decoration: none;    /* kill the default underline */
+  color: inherit; text-decoration: none;
 }
 
 .popup.project-popup a .link-text {
-  display: inline-block;    /* shrink pseudo‑element to text width */
-  position: relative;       /* ensure ::after positions correctly */
+  display: inline-block; position: relative;
 }
 
 .popup.project-popup a .link-text::after {
   content: '';
-  position: absolute;
-  left: 0; bottom: -2px;
+  position: absolute; left: 0; bottom: -2px;
   width: 100%; height: 1px;
-  background: currentColor; /* inherit link color */
-  transform: scaleX(0);
-  transform-origin: left;
+  background: currentColor;
+  transform: scaleX(0); transform-origin: left;
   transition: transform 0.3s ease;
 }
 
@@ -541,51 +506,14 @@ body {
   transform: scaleX(1);
 }
 
-@media (max-width: 728px) {
-  /* Apply to all popups: project, waiter, final */
-  .popup {
-    width: 80vw !important;
-    max-width: none !important;
-    padding: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-  }
-}
-/* Global text selection */
+/* ─── GLOBAL SELECTION ─────────────────────────────────────────────────────── */
+
 ::selection {
   background-color: var(--accent);
   color: #000;
 }
 
-/* Footer text selection override */
 .footer ::selection {
   background-color: #000;
   color: var(--accent);
-}
-
-/* 1) Make the footer itself only 100vh tall (so it always exactly equals the viewport height) */
-.footer {
-  height: 100vh !important;
-}
-
-/* 2) Give yourself more “scroll room” on mobile so you can pull the footer fully up */
-@media (max-width: 728px) {
-  .scroll-expander {
-    /* instead of 40vh, give it 80vh so you can scroll farther */
-    height: 80vh;
-  }
-}
-
-/* 3) Collapse to a single column on mobile and hide the right‐hand column */
-@media (max-width: 728px) {
-  .footer-columns {
-    display: flex;
-    flex-direction: column;
-  }
-  .footer-right {
-    display: none;
-  }
-  .footer-left {
-    width: 100%;
-  }
 }
