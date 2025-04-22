@@ -51,6 +51,31 @@ body {
 }
 
 /* ─── HERO & INTRO ─────────────────────────────────────────────────────────── */
+.intro a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+}
+
+.intro a .link-text {
+  position: relative;
+  display: inline-block;
+}
+
+.intro a .link-text::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.intro a:hover .link-text::after {
+  transform: scaleX(1);
+}
 
 .hero {
   position: relative;
@@ -82,10 +107,10 @@ body {
 }
 
 .intro-eyes-wrapper .eye {
-  width: 0.7em;
-  height: 0.5em;
+  width: 0.8em;
+  height: 0.6em;
   background: #fff;
-  border: 0.05em solid #000;
+  border: 1.5px solid #000;
   border-radius: 100%;
   overflow: hidden;
   position: relative;
@@ -111,7 +136,7 @@ body {
   top: 50%;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 1.5px;
   background: #000;
   transform: translateY(-50%);
 }
@@ -403,6 +428,20 @@ body {
 }
 .waiter-no:hover .link-text::after {
   transform: scaleX(1);
+}
+
+/* CSS: hide buttons completely until “ready” */
+.popup.waiter-popup .waiter-option,
+.popup.waiter-popup .waiter-no {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.popup.waiter-popup.ready .waiter-option,
+.popup.waiter-popup.ready .waiter-no {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* ─── PAYMENT POPUP ───────────────────────────────────────────────────────── */

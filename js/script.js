@@ -9,16 +9,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const projects = [
     {
-      name: 'weekdays', image: 'weekdays.png', client: 'Weekdays',
+      name: 'weekdays', image: 'weekdays.gif', client: 'Weekdays',
       work: 'website', year: '2025',
-      description: 'Brand and web work across hospitality clients.',
+      description: 'A clean and minimal website, unless you want it not to be. Built for weekdays at weekdays.',
       link: 'https://week-days.com.au/'
+    },
+    {
+      name: 'studio blank', image: 'studio-blank.gif', client: 'studio blank',
+      work: 'website, motion design', year: '2024',
+      description: 'A quirky website for a furniture studio (via weekdays)',
+      link: 'https://www.studioblank.com.au/'
     },
     {
       name: 'veraison', image: 'veraison.png', client: 'veraison',
       work: 'brand, website, print', year: '2025',
       description: 'A print-turned-digital wine and culture zine.',
       link: 'https://www.veraisonmag.com/'
+    },
+    {
+      name: 'claire adey', image: 'claire-adey.gif', client: 'claire adey',
+      work: 'website', year: '2025',
+      description: 'A portfolio website for a foodie needs a good cookies section.',
+      link: 'https://www.claireadey.com/'
     },
     {
       name: 'oishii dry', image: 'oishii-dry.png', client: 'Oishii Dry',
@@ -208,8 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function blinkAll() {
     eyes.forEach(blinkEye);
     eyes.forEach(eye => {
-      eye.style.transform = 'translateY(-1px)';
-      setTimeout(() => eye.style.transform = 'translateY(0)', 100);
     });
   }
 
@@ -269,99 +279,137 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const waiterSteps = [
     {
-      question: "Welcome to Liam's website. Can I start you with any still or sparkling water?",
+      question: "Welcome to Liam's website. I'll be taking care of you today. Can I start you with any still or sparkling water?",
       options: [
-        { label: "STILL", cost: 0 },
-        { label: "SPARKLING", cost: 3.5 },
+        { label: 'STILL', cost: 0 },
+        { label: 'SPARKLING', cost: 3.5 }
       ],
-      mandatory: true,
+      mandatory: true  // no “no thanks” here
     },
     {
-      question: "Would you like an oyster & chablis, or croquette & beer?",
+      question: "How are we settling in? Can I interest you in a freshly shucked oyster and a glass of chablis? Or perhaps some manchego croquetas, paprika aioli and a crisp lager?",
       options: [
-        { label: "OYSTER & CHABLIS", cost: 18 },
-        { label: "CROQUETTE & BEER", cost: 14 },
-      ],
+        { label: 'OYSTER & CHABLIS', cost: 15.5 },
+        { label: 'CROQUETAS & BEER', cost: 13.5 }
+      ]
     },
     {
-      question: "Octopus tentacle skewer, or seasonal vegetable tart?",
+      question: "Are we feeling like some more snacks? We have a lovely simple tart of snow crab and chives, and a beautiful kangaroo tataki brushed with our house dashi.",
       options: [
-        { label: "OCTOPUS & LAP CHEONG", cost: 22 },
-        { label: "VEGETABLE TART", cost: 19 },
-      ],
+        { label: 'CRAB TART', cost: 21 },
+        { label: 'KANGAROO TATAKI', cost: 19 }
+      ]
     },
     {
-      question: "Steak frites or snails from the mulch?",
+      question: "Can I get you another drink at all? We do a killer rye old fashioned. There's also a bouncy new tasmanian gamay on the list.",
       options: [
-        { label: "STEAK FRITES", cost: 29 },
-        { label: "SNAILS FROM THE MULCH", cost: 25 },
-      ],
+        { label: 'RYE OLD FASH', cost: 14 },
+        { label: 'GAMAY', cost: 11 }
+      ]
     },
     {
-      question: "Dessert: Crêpes Suzette, panna cotta or affogato?",
+      question: "Are we feeling ready for mains? The specials tonight are to die for. Our pie of the evening is ethically hunted venison stewed in red wine and herbs de provence. And tonight's fish is a swordfish steak cooked in brown butter, served on sauce vierge.",
       options: [
-        { label: "CREPES SUZETTE", cost: 14 },
-        { label: "PANNA COTTA", cost: 13 },
-        { label: "I'M STUFFED", cost: 0 },
-      ],
+        { label: 'DEER PIE', cost: 21 },
+        { label: 'SWORDFISH', cost: 24 }
+      ]
+    },
+    {
+      question: "Room for dessert? Go on, just take a peep. Treat yourself. We have a very simple lemon tart, and we're also doing a Crêpes Suzette finished tableside if you feel like a bit of a show.",
+      options: [
+        { label: 'LEMON TART', cost: 9 },
+        { label: 'CRÊPES SUZETTE', cost: 11 }
+      ]
+    },
+    {
+      question: "Can I offer you any tea, coffee, or a complimentary cigarette to round out the meal?",
+      options: [
+        { label: 'TEA', cost: 3 },
+        { label: 'COFFEE', cost: 4 },
+        { label: 'CIGARETTE', cost: 0 }
+      ]
     },
     {
       question: "Shall I bring you the cheque?",
       options: [
-        { label: "YES", cost: 0, isFinal: true },
+        { label: 'YES', cost: 0, isFinal: true }
       ],
-    },
+      // you can omit `mandatory` here since there's only one option
+    }
   ];
 
-  function showWaiterStep(i) {
-    if (waiterStopped || i >= waiterSteps.length) return;
-    const step = waiterSteps[i];
-    const w = document.createElement("div");
-    w.className = "popup waiter-popup";
-    w.innerHTML = `<p>${step.question}</p>`;
+  // JS: in your showWaiterStep(...)
+function showWaiterStep(i) {
+  if (waiterStopped || i >= waiterSteps.length) return;
+  const step = waiterSteps[i];
+  const w = document.createElement('div');
+  w.className = 'popup waiter-popup';
+  
+  // question container
+  const questionEl = document.createElement('p');
+  w.appendChild(questionEl);
 
-    step.options.forEach((opt) => {
-      const btn = document.createElement("button");
-      btn.className = "waiter-option";
-      btn.textContent = opt.label;
-      btn.onclick = () => {
-        w.remove();
-        if (opt.cost > 0) addToBill(opt.label, opt.cost);
-        if (opt.isFinal) {
-          showPayment();
-        } else {
-          waiterIndex++;
-          waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
-        }
-      };
-      w.appendChild(btn);
-    });
+  // create buttons (hidden initially)
+  step.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'waiter-option';
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      w.remove();
+    
+      // always add whatever they choose, even if cost is 0
+      billTotal += opt.cost;
+      addToBill(opt.label, opt.cost);
+    
+      if (opt.isFinal) {
+        return showPayment();
+      }
+      waiterIndex++;
+      waiterTimeout = setTimeout(() => showWaiterStep(waiterIndex), 20000);
+    };
+    w.appendChild(btn);
+  });
 
-    if (!step.mandatory) {
-      const a = document.createElement("a");
-      a.className = "waiter-no";
-      a.href = "#";
-      a.innerHTML = `<span class="link-text">no thanks</span>`;
-      a.onclick = (e) => {
-        e.preventDefault();
-        waiterStopped = true;
-        w.remove();
-      };
-      w.appendChild(a);
-    }
-
-    document.body.appendChild(w);
-    // clicking outside closes just this
-    setTimeout(() => {
-      const outside = (e) => {
-        if (!w.contains(e.target)) {
-          w.remove();
-          window.removeEventListener("click", outside);
-        }
-      };
-      window.addEventListener("click", outside);
-    }, 0);
+  if (!step.mandatory) {
+    const noBtn = document.createElement('a');
+    noBtn.className = 'waiter-no';
+    noBtn.href = '#';
+    noBtn.innerHTML = '<span class="link-text">no thanks</span>';
+    noBtn.onclick = e => {
+      e.preventDefault();
+      waiterStopped = true;
+      w.remove();
+    };
+    w.appendChild(noBtn);
   }
+
+  document.body.appendChild(w);
+
+  // FASTER TYPEWRITER (15ms)
+  const text = step.question;
+  let idx = 0;
+  function typeChar() {
+    questionEl.textContent = text.slice(0, idx++);
+    if (idx <= text.length) {
+      setTimeout(typeChar, 15);
+    } else {
+      // reveal buttons only once typing is done
+      w.classList.add('ready');
+    }
+  }
+  typeChar();
+
+  // outside-click to close just this popup
+  setTimeout(() => {
+    function outside(e) {
+      if (!w.contains(e.target)) {
+        w.remove();
+        window.removeEventListener('click', outside);
+      }
+    }
+    window.addEventListener('click', outside);
+  }, 0);
+}
 
   function showPayment() {
     waiterStopped = true;
