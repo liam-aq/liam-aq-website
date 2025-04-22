@@ -155,14 +155,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ────────────────────────────────────────────────────────────────
   // 2) FOOTER FADE ON SCROLL
   // ────────────────────────────────────────────────────────────────
-  window.addEventListener("scroll", () => {
-    const footer = document.getElementById("footer");
+  window.addEventListener('scroll', () => {
+    const footer = document.getElementById('footer');
     const scrollY = window.scrollY || window.pageYOffset;
-    const maxScroll = document.body.scrollHeight - window.innerHeight;
-    const p = Math.min(scrollY / maxScroll, 1);
-    footer.style.opacity = p;
-    footer.style.transform = `translateY(${(1 - p) * 100}%)`;
-    footer.style.pointerEvents = p > 0.05 ? "auto" : "none";
+    const viewportH = document.documentElement.clientHeight;
+    const maxScroll = document.documentElement.scrollHeight - viewportH;
+    const progress = Math.min(scrollY / maxScroll, 1);
+  
+    footer.style.opacity = progress;
+    footer.style.transform = `translateY(${(1 - progress) * 100}%)`;
+    footer.style.pointerEvents = progress > 0.05 ? 'auto' : 'none';
   });
 
   // ────────────────────────────────────────────────────────────────
