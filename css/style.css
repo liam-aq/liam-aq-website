@@ -551,3 +551,14 @@ body {
     transform: translateX(-50%) !important;
   }
 }
+/* Global text selection */
+::selection {
+  background-color: var(--accent);
+  color: #000;
+}
+
+/* Footer text selection override */
+.footer ::selection {
+  background-color: #000;
+  color: var(--accent);
+}
