@@ -206,60 +206,69 @@ body {
 
 /* ─── FOOTER ───────────────────────────────────────────────────────────────── */
 
+/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
+
+/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
+
 .footer {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: calc(1.2* 100dvh);
-  overflow: hidden;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  z-index: 10;
+  padding-bottom: 20px;
+  box-sizing: border-box;
   opacity: 0;
   transform: translateY(100%);
   pointer-events: none;
+  z-index: 10;
+  background: var(--footer-bg);
+
+
+  /* faster transition */
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+/* knock out the gradient layer completely */
+.footer-background {
+  display: none !important;
 }
 
 .footer-inner {
-  position: relative;
-  width: 100vw;
-  display: flex;
-  align-items: flex-end;
-  padding: 20px;               /* 20px on all sides, including bottom */
+  width: 100%;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
   color: #000;
-}
-
-.footer-background {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--footer-bg) 90%, transparent);
-  z-index: -1;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .footer-columns {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem;
   width: 100%;
 }
 
 .footer-left {
-  width: 50%;
-  text-align: left;
+  flex: 0 0 50%;
   line-height: 1.4;
+  text-align: left;
 }
 
 .footer-right {
+  flex: 0 0 auto;
   margin-left: 20px;
   line-height: 1.4;
   text-align: left;
 }
 
+/* link underline animation */
 .footer-left a,
 .footer-right a {
   position: relative;
@@ -282,27 +291,10 @@ body {
   transform: scaleX(1);
 }
 
-/* remove extra <p> margins in the footer so padding:20px is the only space */
-.footer-left p,
-.footer-right p {
-  margin: 0 0 0.5em; /* or margin: 0; if you want no space between lines */
-}
-
-/* ensure the very last paragraph sits flush above the padding */
-.footer-left p:last-child,
-.footer-right p:last-child {
-  margin-bottom: 0;
-}
-
-/* ─── SELECTION ───────────────────────────────────────────────────────────── */
-
-::selection {
-  background-color: var(--accent);
-  color: #000;
-}
-.footer ::selection {
-  background: #000;
-  color: var(--accent);
+/* mobile columns fallback */
+@media (max-width: 728px) {
+  .footer-left  { flex: 0 0 50%; }
+  .footer-right { flex: 0 0 50%; margin-left: 0; }
 }
 
 /* ─── GLOBAL BLUR LAYER ───────────────────────────────────────────────────── */

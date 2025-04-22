@@ -175,8 +175,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const progress = Math.min(scrollY / maxScroll, 1);
   
     footer.style.opacity = progress;
-    footer.style.transform = `translateY(${(1 - progress) * 100}%)`;
-    footer.style.pointerEvents = progress > 0.05 ? 'auto' : 'none';
+    window.addEventListener('scroll', () => {
+      const footer   = document.getElementById('footer');
+      const scrollY  = window.scrollY || window.pageYOffset;
+      const maxScroll= document.body.scrollHeight - window.innerHeight;
+      const progress = Math.min(scrollY / maxScroll, 1);
+    
+      footer.style.opacity = progress;
+      // slide from fully off-screen (100%) down to 0%
+      footer.style.transform = `translateY(${100 * (1 - progress)}%)`;
+      footer.style.pointerEvents = progress > 0.03 ? 'auto' : 'none';
+    });
+    footer.style.pointerEvents = progress > 0.03 ? 'auto' : 'none';
   });
 
   // ────────────────────────────────────────────────────────────────
