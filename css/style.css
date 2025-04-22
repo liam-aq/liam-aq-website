@@ -1,4 +1,5 @@
-/* Fonts */
+/* ─── FONTS ───────────────────────────────────────────────────────────────── */
+
 @font-face {
   font-family: 'PS Times';
   src: url('../fonts/PSTimesTrial-Regular.woff2') format('woff2');
@@ -15,9 +16,19 @@
   font-display: swap;
 }
 
+/* ─── ROOT VARS ─────────────────────────────────────────────────────────────── */
+
 :root {
   --accent: #f1240d;
   --footer-bg: #f1240d;
+}
+
+/* ─── GLOBAL RESET ──────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html, body {
@@ -33,40 +44,89 @@ html, body {
 body {
   font-family: 'PS Times', serif;
   font-size: 2rem;
-  font-weight: 400;
   line-height: 1.2;
   color: #000;
   background: #fff;
-  text-transform: none;
-  box-sizing: border-box;
   position: relative;
 }
+
+/* ─── HERO & INTRO ─────────────────────────────────────────────────────────── */
 
 .hero {
   position: relative;
   width: 100vw;
   min-height: 100vh;
-  box-sizing: border-box;
-  z-index: 1;
   pointer-events: none;
 }
 
 .intro {
-  font-size: 3vw;
-  line-height: 1.1;
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  letter-spacing: 0;
   position: relative;
   z-index: 2;
   pointer-events: auto;
+  font-size: 3vw;
+  line-height: 1.1;
+  letter-spacing: 0;
+  padding: 20px;
 }
 
 .intro p {
-  margin-top: 0;
-  margin-bottom: 1.5em;
+  margin: 0 0 1.5em;
 }
+
+.intro-eyes-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  margin: 0 0.1em;
+  position: relative;
+}
+
+.intro-eyes-wrapper .eye {
+  width: 0.7em;
+  height: 0.5em;
+  background: #fff;
+  border: 0.05em solid #000;
+  border-radius: 100%;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+
+.intro-eyes-wrapper .pupil {
+  width: 0.3em;
+  height: 0.3em;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: none; /* tracking driven by JS */
+}
+
+/* blink-line inside eyes */
+.blink-line {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #000;
+  transform: translateY(-50%);
+}
+.eye.blinking {
+  background: transparent;
+  border-color: transparent;
+}
+.eye.blinking .pupil {
+  display: none;
+}
+.eye.blinking .blink-line {
+  display: block;
+}
+
+/* ─── THUMBNAILS LAYER ──────────────────────────────────────────────────────── */
 
 .sites {
   position: fixed;
@@ -87,37 +147,39 @@ body {
   background-position: center;
   pointer-events: auto;
 }
-
-.floating-block.paused {
-  animation-play-state: paused;
-}
-
+.floating-block.paused { animation-play-state: paused; }
 .floating-block.dimmed {
   filter: grayscale(100%);
   transition: filter 0.3s ease;
 }
 
+/* ─── PROJECT POPUP ────────────────────────────────────────────────────────── */
+
 .popup.project-popup {
   position: absolute;
-  background: #fff;
-  border: 1px solid #000;
-  padding: 1rem;
   display: none;
   flex-direction: column;
   gap: 0.5rem;
+  background: #fff;
+  border: 1px solid #000;
+  padding: 1rem;
+  max-width: 300px;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
-  z-index: 1000;
   text-transform: uppercase;
+  z-index: 1000;
   transition: opacity 0.2s ease;
-  max-width: 300px;
-  box-sizing: border-box;
   pointer-events: auto;
+  box-sizing: border-box;
 }
+
+/* ─── SCROLL EXPANDER ─────────────────────────────────────────────────────── */
 
 .scroll-expander {
   height: 40vh;
 }
+
+/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
 
 .footer {
   position: fixed;
@@ -133,51 +195,42 @@ body {
   opacity: 0;
   transform: translateY(100%);
   pointer-events: none;
-  transition: none;
 }
 
 .footer-inner {
+  position: relative;
   width: 100vw;
   height: 100vh;
   display: flex;
-  justify-content: flex-start;
   align-items: flex-end;
-  color: #000;
+  padding: 20px 20px 20px 20px; /* 20px bottom */
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
-  padding: 20px;
-  padding-bottom: 20px;
-  box-sizing: border-box;
-  position: relative;
-  margin-top: 0;
+  color: #000;
 }
 
 .footer-background {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: linear-gradient(to top, var(--footer-bg) 90%, transparent);
   z-index: -1;
 }
 
 .footer-columns {
-  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
+  width: 100%;
 }
 
 .footer-left {
   width: 50%;
-  line-height: 1.4;
   text-align: left;
+  line-height: 1.4;
 }
 
 .footer-right {
-  width: auto;
   margin-left: 20px;
   line-height: 1.4;
   text-align: left;
@@ -185,103 +238,47 @@ body {
 
 .footer-left a,
 .footer-right a {
+  position: relative;
   color: inherit;
   text-decoration: none;
-  position: relative;
 }
-
 .footer-left a .link-text::after,
 .footer-right a .link-text::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
 }
-
 .footer-left a:hover .link-text::after,
 .footer-right a:hover .link-text::after {
   transform: scaleX(1);
 }
 
-@media (max-width: 728px) {
-  .intro {
-    font-size: 5.2vw;
-    width: 100%;
-    padding: 20px;
-  }
-
-  .popup.project-popup {
-    max-width: 240px;
-  }
-
-  .floating-block {
-    width: 75px;
-    height: 75px;
-  }
-
-  body {
-    font-size: 1.4rem;
-  }
-
-  .footer-left {
-    max-width: 70%;
-  }
-
-  .footer-right {
-    max-width: 30%;
-  }
-}
-
-.footer ::selection {
-  background: #000;
-  color: var(--accent);
-}
+/* ─── SELECTION ───────────────────────────────────────────────────────────── */
 
 ::selection {
   background-color: var(--accent);
   color: #000;
 }
-
-a {
-  position: relative;
-  text-decoration: none;
-  color: inherit;
-  display: inline;
-  white-space: nowrap;
-  transition: none;
+.footer ::selection {
+  background: #000;
+  color: var(--accent);
 }
 
-.link-text {
-  position: relative;
-  display: inline-block;
-}
-
-.link-text::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-a:hover .link-text::after {
-  transform: scaleX(1);
-}
+/* ─── GLOBAL BLUR LAYER ───────────────────────────────────────────────────── */
 
 .global-blur {
   display: none;
+  position: fixed; inset: 0;
+  z-index: 2;
+  pointer-events: none;
 }
+
+/* ─── BILL ─────────────────────────────────────────────────────────────────── */
 
 .bill {
   position: fixed;
@@ -290,77 +287,72 @@ a:hover .link-text::after {
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
-  z-index: 9999;
-  background: none;
   color: black;
+  background: none;
   text-align: right;
   pointer-events: auto;
+  z-index: 9999;
 }
 
 .bill .bill-header {
   text-decoration: underline;
   margin-bottom: 10px;
   font-weight: normal;
+  display: inline-block;
+}
+
+.bill .bill-item {
+  margin-bottom: 0.25rem;
 }
 
 .bill a.settle-link {
   display: inline-block;
   margin-top: 0.5rem;
+  position: relative;
   color: inherit;
   text-decoration: none;
-  position: relative;
 }
-
 .bill a.settle-link .link-text::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
 }
-
 .bill a.settle-link:hover .link-text::after {
   transform: scaleX(1);
 }
+
+/* ─── WAITER POPUP ────────────────────────────────────────────────────────── */
 
 .popup.waiter-popup {
   position: fixed;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   background: #fff;
   border: 1px solid #000;
   width: 600px;
   max-width: calc(100% - 120px);
   padding: 80px;
-  z-index: 9999;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
   opacity: 0;
-  animation: fadeInWaiter 0.5s ease forwards;
   pointer-events: auto;
+  z-index: 9999;
   box-sizing: border-box;
-}
-
-@media (max-width: 728px) {
-  .popup.waiter-popup {
-    padding: 40px;
-  }
+  animation: fadeInWaiter 0.5s ease forwards;
 }
 
 @keyframes fadeInWaiter {
-  to {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }
 
 .waiter-option {
@@ -372,118 +364,113 @@ a:hover .link-text::after {
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   cursor: pointer;
+  width: 100%;
+  text-align: center;
   transition: all 0.2s ease;
 }
-
 .waiter-option:hover {
   background: #000;
   color: #fff;
 }
 
 .waiter-no {
-  margin-top: 0.5rem;
   align-self: center;
-  color: inherit;
   text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   position: relative;
 }
-
 .waiter-no .link-text::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
 }
-
 .waiter-no:hover .link-text::after {
   transform: scaleX(1);
 }
 
-.payment-popup {
+/* ─── PAYMENT POPUP ───────────────────────────────────────────────────────── */
+
+.popup.final-popup {
   position: fixed;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   background: #fff;
   border: 1px solid #000;
   width: 600px;
   max-width: calc(100% - 120px);
   padding: 80px;
-  z-index: 9999;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
   box-sizing: border-box;
   text-align: center;
+  z-index: 9999;
 }
 
-.payment-popup a {
-  margin-top: 1rem;
-  color: inherit;
-  text-decoration: none;
-  position: relative;
+.popup.final-popup .pay-button {
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #000;
+  background: transparent;
+  color: #000;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.popup.final-popup .pay-button:hover {
+  background: #000;
+  color: #fff;
 }
 
-.payment-popup a .link-text::after {
+/* ─── MEDIA QUERIES ───────────────────────────────────────────────────────── */
+
+@media (max-width: 728px) {
+  body { font-size: 1.4rem; }
+  .intro { font-size: 5.2vw; }
+  .floating-block { width: 75px; height: 75px; }
+  .popup.project-popup { max-width: 240px; }
+  .popup.waiter-popup,
+  .popup.final-popup { padding: 40px; width: auto; max-width: calc(100% - 120px); }
+  .footer-left { width: 70%; }
+  .footer-right { width: 30%; margin-left: 0; }
+}
+
+/* ───────────────────────────────────────────────────────
+   Project‑popup links: no default underline, animated only
+───────────────────────────────────────────────────────── */
+.popup.project-popup a {
+  color: inherit;           /* match surrounding text */
+  text-decoration: none;    /* kill the default underline */
+}
+
+.popup.project-popup a .link-text {
+  display: inline-block;    /* shrink pseudo‑element to text width */
+  position: relative;       /* ensure ::after positions correctly */
+}
+
+.popup.project-popup a .link-text::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
-  background: currentColor;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
+  background: currentColor; /* inherit link color */
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
 }
 
-.payment-popup a:hover .link-text::after {
+.popup.project-popup a:hover .link-text::after {
   transform: scaleX(1);
-}
-
-.final-pay-popup {
-  text-align: center;
-}
-
-.final-pay-popup p {
-  margin: 0;
-  font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  padding-bottom: 1rem;
-}
-
-.final-pay-popup {
-  text-align: center;
-}
-
-.final-pay-popup p {
-  margin: 0;
-  font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  padding-bottom: 1rem;
-}
-
-.bill-item {
-  display: block;
-  margin-bottom: 0.25rem;
-}
-
-/* Style the PAY button same as other options, but with spacing */
-.waiter-pay-button {
-  margin-top: 20px;
-  width: 100%;
-  text-align: center;
-  box-sizing: border-box;
 }
