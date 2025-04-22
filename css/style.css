@@ -376,3 +376,15 @@ body {
   height: 100vh;             /* let it size to its content, instead of 100vh */
   /* keep your existing transform/transition rules here */
 }
+
+/* global selection highlight */
+::selection {
+  background-color: var(--accent);
+  color: #000;
+}
+
+/* footer gets the inverse */
+.footer ::selection {
+  background-color: #000;
+  color: var(--accent);
+}
