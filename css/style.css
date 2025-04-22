@@ -562,3 +562,30 @@ body {
   background-color: #000;
   color: var(--accent);
 }
+
+/* 1) Make the footer itself only 100vh tall (so it always exactly equals the viewport height) */
+.footer {
+  height: 100vh !important;
+}
+
+/* 2) Give yourself more “scroll room” on mobile so you can pull the footer fully up */
+@media (max-width: 728px) {
+  .scroll-expander {
+    /* instead of 40vh, give it 80vh so you can scroll farther */
+    height: 80vh;
+  }
+}
+
+/* 3) Collapse to a single column on mobile and hide the right‐hand column */
+@media (max-width: 728px) {
+  .footer-columns {
+    display: flex;
+    flex-direction: column;
+  }
+  .footer-right {
+    display: none;
+  }
+  .footer-left {
+    width: 100%;
+  }
+}
