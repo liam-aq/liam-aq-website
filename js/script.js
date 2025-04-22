@@ -208,8 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   document.addEventListener("mousemove", trackPupils);
-  document.addEventListener("click", winkRight);
-  setInterval(() => { if (Math.random() < 0.2) { blinkAll(); jiggle(); } }, 3000);
+  setInterval(() => { if (Math.random() < 0.3) { blinkAll(); jiggle(); } }, 2000);
 
   // ────────────────────────────────────────────────────────────────
   // 5) WAITER SEQUENCE • BILL • FINAL PAYPAL

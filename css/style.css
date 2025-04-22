@@ -445,7 +445,25 @@ body {
   .popup.final-popup { padding: 40px; width: auto; max-width: calc(100% - 120px); }
   .footer-left { width: 70%; }
   .footer-right { width: 30%; margin-left: 0; }
+  /* ——— Mobile waiter popup ——— */
+.popup.waiter-popup {
+  width: 90vw !important;
+  max-width: none !important;
+  padding: 30px !important;
 }
+
+/* ——— Give more scroll room on mobile so footer can pull fully up ——— */
+.scroll-expander {
+  height: 60vh !important;
+}
+
+/* ——— Enlarge eyes for mobile and desktop ——— */
+.intro-eyes-wrapper .eye {
+  width: 0.9em !important;
+  height: 0.6em !important;
+}
+}
+
 
 /* ───────────────────────────────────────────────────────
    Project‑popup links: no default underline, animated only
