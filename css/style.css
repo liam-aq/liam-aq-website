@@ -245,6 +245,17 @@ body {
   align-self: center;
 }
 
+/* ─── WAITER DIALOGUE STYLING ─────────────────────────────────────────────── */
+.popup.waiter-popup,
+.popup.waiter-popup p {
+  /* use the cursive Millionaire Script for all dialogue text */
+  font-family: 'Millionaire Script', cursive;
+  /* sentence‐case rather than all‐caps */
+  text-transform: none;
+  /* bump up the base size */
+  font-size: 1.3rem;
+}
+
 /* ─── CHEQUE / RECEIPT POPUP ───────────────────────────────────────────────── */
 .popup.cheque-popup {
   position: fixed;
@@ -660,6 +671,11 @@ body {
   pointer-events: auto;
 }
 
+/* ─── PROJECT POPUP • REMOVE UNDERLINE ON TITLE ─────────────────────────── */
+.popup.project-popup > .link-text::after {
+  display: none !important;
+}
+
 /* ─── BASE POPUP STYLES ───────────────────────────────────────────────────── */
 .popup {
   font-family: 'Commit Mono', monospace;
@@ -1032,11 +1048,11 @@ body {
   height: 7rem;
   background-size: cover;
   background-position: center;
-  filter: grayscale(100%);
-  mix-blend-mode: multiply;
+  /* filter: grayscale(100%);
+  mix-blend-mode: multiply;*/
   cursor: pointer;
   margin-bottom: 40px;
-  transition: filter 0.3s ease, mix-blend-mode 0.3s ease;
+  /*transition: filter 0.3s ease, mix-blend-mode 0.3s ease;*/
 }
 .intro-thumb:hover {
   filter: none;

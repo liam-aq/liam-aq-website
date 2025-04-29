@@ -81,10 +81,12 @@ function layoutThumbnails() {
 
     // show popup
     block.addEventListener("mouseenter", e => {
+      clearTimeout(popupHideTimeout);
       console.log("mouseenter on project:", project.client);
       showProjectPopupFor(block, project);
     });
     block.addEventListener("click", e => {
+      clearTimeout(popupHideTimeout);
       console.log("click on project:", project.client);
       showProjectPopupFor(block, project);
     });
@@ -485,11 +487,14 @@ function showPolice() {
 }
 
 // helper: show project popup under any element
-// ────────────────────────────────────────────────────────────────
 function showProjectPopupFor(block, project) {
+  // prevent any pending hide before showing a new popup
+  clearTimeout(popupHideTimeout);
+
   const OFFSET = 20;
   block.classList.add("paused");
   activeBlock = block;
+
   popup.className = "popup project-popup";
   popup.innerHTML = `
     <span class="link-text">${project.client}</span>
@@ -500,6 +505,7 @@ function showProjectPopupFor(block, project) {
       <span class="link-text">Visit site</span>
     </a>
   `;
+
   // instant show (no fade)
   popup.style.transition = "none";
   Object.assign(popup.style, {
@@ -511,13 +517,12 @@ function showProjectPopupFor(block, project) {
     top:        "-9999px"
   });
 
+  // measure & position: flush-left at thumbnail, 20px below
   const rect = block.getBoundingClientRect();
   const pw   = popup.offsetWidth;
   const ph   = popup.offsetHeight;
-  // flush-left align popups, 20px below
-  const px = rect.left;
 
-  // calculate vertical position (20px below)
+  const px = rect.left;
   const tooLow = rect.bottom + ph > window.innerHeight;
   const py    = tooLow
     ? rect.bottom + pageYOffset - ph
@@ -525,13 +530,8 @@ function showProjectPopupFor(block, project) {
 
   popup.style.left = `${px}px`;
   popup.style.top  = `${py}px`;
-    // helper function to centralize hide logic
-    function hidePopup() {
-      popup.style.display = 'none';
-      activeBlock?.classList.remove('paused');
-      activeBlock = null;
-    }
 }
+
 function hidePopup() {
   popup.style.display = 'none';
   activeBlock?.classList.remove('paused');
