@@ -273,15 +273,18 @@ body {
   background: rgba(43, 33, 6, 0.5);
   opacity: 0; pointer-events: none;
   transition: opacity 3s ease; z-index: 9999;
+  width:  100vw;
+  height: 100vh;
 }
 #dim-overlay.active {
   opacity: 1;
 }
 #jazz-ui, #light-toggle {
+  display: none;
   position: fixed; bottom: 20px; left: 20px;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem; text-transform: uppercase;
-  cursor: pointer; color: inherit; z-index: 9999;
+  cursor: pointer; color: inherit; z-index: 5;
 }
 #jazz-ui.hidden, #light-toggle.hidden {
   display: none !important;
@@ -322,8 +325,8 @@ body {
 
 /* ─── MEDIA QUERIES ───────────────────────────────────────────────────────── */
 @media (max-width: 728px) {
-  body { font-size: 1.4rem; }
-  .intro { font-size: 5.2vw; }
+  body { font-size: 1.8rem; }
+  .intro { font-size: 6vw; }
   .floating-block { width: 75px; height: 75px; }
   .popup.project-popup { max-width: 240px; }
   .popup.waiter-popup,
@@ -331,6 +334,7 @@ body {
     width: 80vw !important;
     max-width: none !important;
     padding: 20px !important;
+    top: 25%;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
@@ -467,6 +471,7 @@ body {
   bottom: 20px;
   left: 20px;
   z-index: 100; /* above footer when it slides */
+  pointer-events: auto;  /* make the buttons clickable */
 }
 
 /* if both appear, stack jazz above light-toggle */
@@ -483,6 +488,7 @@ body {
   width: 100px; /* or auto as you prefer */
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
+  pointer-events: auto;  /* make the buttons clickable */
 }
 .jazz-ui button:hover {
   background: #000;
@@ -519,7 +525,7 @@ body {
     font-family: 'Commit Mono', monospace;
     text-transform: uppercase;
     cursor: pointer;
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 20px;
     z-index: 9999;
@@ -613,7 +619,7 @@ body {
 .intro { position: relative; } /* ensure intro is the positioning context */
 #jazz-ui,
 #light-toggle {
-  position: absolute;  /* take them out of the fixed layer */
+  position: fixed;  /* take them out of the fixed layer */
   bottom: 20px;
   left: 20px;
   z-index: 2;          /* above intro content but below footer */

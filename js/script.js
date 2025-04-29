@@ -264,45 +264,45 @@ popup.addEventListener("mouseleave", () => {
 // ────────────────────────────────────────────────────────────────
 // 5) AMBIANCE CONTROLS • INIT JAZZ TOGGLE & LIGHT TOGGLE
 // ────────────────────────────────────────────────────────────────
-const heroEl     = document.querySelector('.hero');
+
+// 1) Declare up here so both functions can see it:
+
 const overlayEl  = document.getElementById('dim-overlay');
 const jazzPlayer = document.getElementById('jazz-player');
 jazzPlayer.loop    = true;
 jazzPlayer.preload = 'auto';
 
+// 2) Jazz toggle IIFE — only deals with jazz
 ;(function initJazzToggle(){
   const jazzUi = document.createElement('div');
-  jazzUi.id             = 'jazz-ui';
-  jazzUi.style.position = 'absolute';
-  jazzUi.style.left     = '20px';
-  jazzUi.style.bottom   = '20px';
-  jazzUi.style.zIndex   = '2';
-  jazzUi.style.display  = 'none';
-  jazzUi.style.pointerEvents = 'auto';   // ← enable pointer events here
+  jazzUi.id            = 'jazz-ui';
+  jazzUi.style.display = 'none';  // start hidden
+  // positioning is handled in your CSS (#jazz-ui { position: fixed; bottom:20px; left:20px; z-index:… })
 
   const btn = document.createElement('button');
-  btn.id                  = 'jazz-toggle';
-  btn.style.background    = 'none';
-  btn.style.border        = 'none';
-  btn.style.padding       = '0';
-  btn.style.fontFamily    = 'Commit Mono, monospace';
-  btn.style.textTransform = 'uppercase';
-  btn.style.cursor        = 'pointer';
-  btn.style.color         = 'inherit';
+  btn.id           = 'jazz-toggle';
+  btn.textContent  = 'play jazz';
+  btn.style.cssText = [
+    'background:none',
+    'border:none',
+    'padding:0',
+    'font-family:Commit Mono,monospace',
+    'text-transform:uppercase',
+    'cursor:pointer',
+    'color:inherit'
+  ].join(';');
   btn.onclick = () => {
     if (jazzPlayer.paused) jazzPlayer.play();
     else                   jazzPlayer.pause();
   };
 
   jazzUi.appendChild(btn);
-  heroEl.appendChild(jazzUi);
+  document.body.appendChild(jazzUi);
 
   function positionJazz() {
-    const lt = document.getElementById('light-toggle');
-    if (lt) {
-      const gap = lt.offsetHeight + 20;
-      jazzUi.style.bottom = `${gap}px`;
-    }
+    if (!lightToggle) return;
+    const gap = lightToggle.offsetHeight + 20;
+    jazzUi.style.bottom = gap + 'px';
   }
 
   jazzPlayer.addEventListener('play', () => {
@@ -317,33 +317,49 @@ jazzPlayer.preload = 'auto';
   });
 })();
 
+// 1) only declare once, at top
 let lightToggle = null;
+
 function ensureLightToggle() {
   if (lightToggle) return;
-  lightToggle = document.createElement('button');
-  lightToggle.id             = 'light-toggle';
-  lightToggle.textContent    = 'turn the lights up';
-  lightToggle.style.position = 'absolute';
-  lightToggle.style.left     = '20px';
-  lightToggle.style.bottom   = '20px';
-  lightToggle.style.zIndex   = '2';
-  lightToggle.style.pointerEvents = 'auto';   // ← and here
-  lightToggle.style.background = 'none';
-  lightToggle.style.border     = 'none';
-  lightToggle.style.padding    = '0';
-  lightToggle.style.fontFamily = 'Commit Mono, monospace';
-  lightToggle.style.textTransform = 'uppercase';
-  lightToggle.style.cursor     = 'pointer';
-  lightToggle.style.color      = 'inherit';
 
+  // 2) build it
+  lightToggle = document.createElement('button');
+  lightToggle.id = 'light-toggle';
+
+  // 3) set its initial label based on whether the overlay is already on
+  lightToggle.textContent = overlayEl.classList.contains('active')
+    ? 'turn the lights up'
+    : 'dim the lights';
+
+  // 4) start hidden
+  lightToggle.style.display = 'none';
+
+  // 5) basic styling (move to CSS if you like)
+  lightToggle.style.cssText += `
+    background:none;
+    border:none;
+    padding:0;
+    font-family:Commit Mono,monospace;
+    text-transform:uppercase;
+    cursor:pointer;
+    color:inherit;
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    z-index:5;
+  `;
+
+  // 6) toggle behavior
   lightToggle.onclick = () => {
-    const on = overlayEl.classList.toggle('active');
-    lightToggle.textContent = on
+    const nowOn = overlayEl.classList.toggle('active');
+    lightToggle.textContent = nowOn
       ? 'turn the lights up'
-      : 'dim the lights again';
+      : 'dim the lights';
   };
 
-  heroEl.appendChild(lightToggle);
+  // 7) add to the DOM
+  document.body.appendChild(lightToggle);
 }
 
   // ────────────────────────────────────────────────────────────────
@@ -405,8 +421,28 @@ function ensureLightToggle() {
       question: "How are you finding the ambiance of the website? Can I do anything to make your stay more comfortable?",
       options: [
         { label: "Play Some Jazz", action: () => { jazzPlayer.play(); } },
-        { label: "Dim the Lights",  action: () => { overlayEl.classList.add('active'); ensureLightToggle(); } },
-        { label: "Both",            action: () => { jazzPlayer.play(); overlayEl.classList.add('active'); ensureLightToggle(); } }
+        
+        {
+          label: "Dim the Lights",
+          action: () => {
+            ensureLightToggle();                    // create if needed
+            overlayEl.classList.add('active');      // show the overlay
+            lightToggle.textContent = 'turn the lights up'; // correct label
+            lightToggle.style.display = 'block';    // finally, make it visible
+          }
+        },
+        
+        {
+          label: "Both",
+          action: () => {
+            jazzPlayer.play();
+            ensureLightToggle();
+            overlayEl.classList.add('active');
+            lightToggle.textContent = 'turn the lights up';
+            lightToggle.style.display = 'block';
+          }
+        }
+        
       ],
       mandatory: false
     },
