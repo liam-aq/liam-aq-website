@@ -1,30 +1,48 @@
-/* ─── FONTS ───────────────────────────────────────────────────────────────── */
+/* ─── LINK-TEXT UNDERLINE ─────────────────────────────────────────────────── */
+.link-text {
+  display: inline-block;
+  position: relative;
+}
+.link-text::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.link-text:hover::after {
+  transform: scaleX(1);
+}
 
+/* ─── GLOBAL LINK COLOR ───────────────────────────────────────────────────── */
+a, a:visited, a:active {
+  color: #000;
+  text-decoration: none;
+}
+
+/* ─── FONTS ───────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'PS Times';
   src: url('../fonts/PSTimesTrial-Regular.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+  font-weight: 100 900; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Commit Mono';
   src: url('../fonts/CommitMonoV143-VF.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+  font-weight: 100 900; font-style: normal; font-display: swap;
 }
 
 /* ─── ROOT VARS ─────────────────────────────────────────────────────────────── */
-
 :root {
-  --bg: #eeeee8;              /* page & popup background */
-  --accent: #f1240d;       /* link & highlight color */
-  --footer-bg: #f1240d;    /* footer background */
+  --bg: #eeeee8;
+  --accent: #f1240d;
+  --footer-bg: #f1240d;
 }
 
 /* ─── GLOBAL RESET ──────────────────────────────────────────────────────────── */
-
 *, *::before, *::after { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
@@ -34,23 +52,18 @@ html, body {
 body {
   font-family: 'PS Times', serif;
   font-size: 2rem; line-height: 1.2;
-  color: #000;
-  background: var(--bg);
-  position: relative;
+  color: #000; background: var(--bg);
+  position: relative; padding-bottom: 30vh;
 }
 
 /* ─── SCROLL BUFFER ────────────────────────────────────────────────────────── */
-
 .scroll-expander {
-  height: 100vh;    /* one viewport of buffer for footer to slide in */
-  pointer-events: none;
+  height: 30vh; pointer-events: none;
 }
 
 /* ─── HERO & INTRO ─────────────────────────────────────────────────────────── */
-
 .hero {
-  position: relative;
-  width: 100vw; min-height: 100vh;
+  position: relative; width: 100vw; min-height: 100vh;
   pointer-events: none;
 }
 .intro {
@@ -60,22 +73,9 @@ body {
   padding: 20px;
 }
 .intro p { margin: 0 0 1.5em; }
-.intro a {
-  color: inherit; text-decoration: none;
-  position: relative;
-}
-.intro a .link-text::after {
-  content: ''; position: absolute;
-  left: 0; bottom: -2px;
-  width: 100%; height: 1px;
-  background: currentColor;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.3s ease;
-}
-.intro a:hover .link-text::after { transform: scaleX(1); }
+.intro a { color: inherit; }
 
-/* eyes */
-
+/* ─── EYE TRACKING ─────────────────────────────────────────────────────────── */
 .intro-eyes-wrapper {
   display: inline-flex; align-items: center;
   gap: 0.2em; margin: 0 0.1em;
@@ -90,14 +90,14 @@ body {
 .intro-eyes-wrapper .pupil {
   width: 0.3em; height: 0.3em;
   background: #000; border-radius: 50%;
-  position: absolute; top:50%; left:50%;
-  transform: translate(-50%,-50%);
-  transition: none;
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
 }
 .blink-line {
   display: none; position: absolute;
-  top:50%; left:0; width:100%; height:1.5px;
-  background:#000; transform:translateY(-50%);
+  top: 50%; left: 0;
+  width: 100%; height: 1.5px;
+  background: #000; transform: translateY(-50%);
 }
 .eye.blinking {
   background: transparent; border-color: transparent;
@@ -105,412 +105,583 @@ body {
 .eye.blinking .pupil { display: none; }
 .eye.blinking .blink-line { display: block; }
 
-/* ─── THUMBNAILS LAYER ─────────────────────────────────────────────────────── */
 
-.sites {
-  position: fixed; top:0; left:0;
-  width:100vw; height:100vh;
-  overflow:hidden; z-index:3;
-  pointer-events:none;
-}
-.floating-block {
-  position:absolute; width:120px; height:120px;
-  background-size:cover; background-position:center;
-  pointer-events:auto;
-}
-.floating-block.paused { animation-play-state: paused; }
-.floating-block.dimmed {
-  filter: grayscale(100%); transition: filter 0.3s ease;
-}
-
-/* ─── PROJECT POPUP ────────────────────────────────────────────────────────── */
-
+/* ─── PROJECT POPUP ───────────────────────────────────────────────────────── */
 .popup.project-popup {
   position: absolute; display: none;
-  flex-direction: column; gap:0.5rem;
+  flex-direction: column; gap: 0.5rem;
   background: var(--bg);
-  border:1px solid #000; padding:1rem;
-  max-width:300px;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform: uppercase;
-  z-index:1000; pointer-events:auto;
-  box-sizing:border-box;
+  border: 1px solid #000; padding: 1rem;
+  max-width: 300px;
+  /* TYPOGRAPHY for project popups */
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem; text-transform: uppercase;
+  z-index: 1000; pointer-events: auto;
   transition: opacity 0.2s ease;
+  line-height: 1.5;
 }
-.popup.project-popup a {
-  color: inherit; text-decoration: none;
+
+/* ─── BASE POPUP STYLES ────────────────────────────────────────────────────── */
+.popup {
+  /* apply to all .popup variants */
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem;
+  text-transform: uppercase;
 }
-.popup.project-popup a .link-text::after {
-  content: ''; position: absolute;
-  left:0; bottom:-2px;
-  width:100%; height:1px;
-  background: currentColor;
-  transform:scaleX(0); transform-origin:left;
-  transition: transform 0.3s ease;
+
+/* wave keyframes: 1.5s up/down, then hold for the rest of a 4.5s cycle */
+@keyframes wave {
+  0%, 20%, 100% { transform: translateY(0); }
+  10%           { transform: translateY(-6px); }
 }
-.popup.project-popup a:hover .link-text::after {
-  transform: scaleX(1);
+
+/* apply a 4.5s infinite loop */
+.wave span {
+  display: inline-block;
+  animation: wave 5s ease-in-out infinite both;
+}
+
+/* ─── TOGGLE LINK STYLING ─────────────────────────────────────────────────── */
+/* remove underline on our toggle link */
+#toggle-websites.link-text::after {
+  display: none !important;
 }
 
 /* ─── FOOTER ───────────────────────────────────────────────────────────────── */
-
-.footer {
-  position: fixed; bottom:0; left:0;
-  width:100vw; height:100vh;
-  display:flex; justify-content:center; align-items:flex-end;
-  padding-bottom:20px;
+#footer {
+  position: fixed; bottom: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex; justify-content: center; align-items: flex-end;
+  padding-bottom: 20px;
   background: var(--footer-bg);
-  box-sizing:border-box;
   transform: translateY(100%);
-  pointer-events: none;
-  z-index:10;
+  pointer-events: none; z-index: 10;
   transition: transform 0.15s ease-out;
 }
-.footer-inner {
-  width:100%;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform:uppercase;
-  color:#000;
-  display:flex; align-items:flex-end;
-  padding:0 20px; box-sizing:border-box;
+#footer .footer-inner {
+  width: 100%; padding: 0 20px;
+  display: flex; align-items: flex-end;
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem; text-transform: uppercase;
+  color: #000;
 }
-.footer-columns {
-  display:flex; gap:2rem; width:100%;
-}
-.footer-left {
-  flex:0 0 50%; line-height:1.4; text-align:left;
-}
-.footer-right {
-  display:block; margin-left:20px; line-height:1.4; text-align:left;
-}
-.footer-left a, .footer-right a {
-  position:relative; color:inherit; text-decoration:none;
-}
-.footer-left a .link-text::after,
-.footer-right a .link-text::after {
-  content:''; position:absolute;
-  left:0; bottom:-2px;
-  width:100%; height:1px;
-  background:currentColor;
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 0.3s ease;
-}
-.footer-left a:hover .link-text::after,
-.footer-right a:hover .link-text::after {
-  transform:scaleX(1);
-}
-@media (max-width:728px) {
-  .footer-right { display: none; }
-}
+#footer .footer-columns { display: flex; gap: 2rem; width: 100%; }
+#footer .footer-left { flex: 0 0 50%; line-height: 1.4; text-align: left; }
+#footer .footer-right { margin-left: 20px; line-height: 1.4; text-align: left; }
+#footer ::selection { background: #000; color: var(--accent); }
 
-/* ─── BILL ─────────────────────────────────────────────────────────────────── */
-
+/* ─── BILL SLIDE-UP ────────────────────────────────────────────────────────── */
 .bill {
-  position: fixed; bottom:20px; right:20px;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform:uppercase;
-  color:#000; background:none; text-align:right;
-  pointer-events:auto; z-index:9999;
+  position: fixed; bottom: 20px; right: 20px;
+  font-family: 'Commit Mono', monospace;
+  font-size: 0.8rem; text-transform: uppercase;
+  color: #000; background: none; text-align: right;
+  pointer-events: auto; z-index: 9999;
+  transform: translateY(100%);
+  transition: transform 0.5s ease;
 }
+.bill.visible { transform: translateY(0); }
 .bill .bill-header {
   text-decoration: underline;
-  margin-bottom:10px; display:inline-block;
+  margin-bottom: 10px; display: inline-block;
 }
-.bill .bill-item { margin-bottom:0.25rem; }
-.bill a.settle-link {
-  display:inline-block; margin-top:0.5rem;
-  position:relative; color:inherit; text-decoration:none;
-}
-.bill a.settle-link .link-text::after {
-  content:''; position:absolute;
-  left:0; bottom:-2px;
-  width:100%; height:1px; background:currentColor;
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 0.3s ease;
-}
-.bill a.settle-link:hover .link-text::after {
-  transform:scaleX(1);
-}
+.bill .bill-item { margin-bottom: 0.25rem; }
+.bill a.settle-link { display: inline-block; margin-top: 0.5rem; }
 
 /* ─── WAITER POPUP ────────────────────────────────────────────────────────── */
-
 .popup.waiter-popup {
-  position: fixed; top:40%; left:50%;
-  transform:translate(-50%,-50%);
-  display:flex; flex-direction:column; gap:1.5rem;
-  background: var(--bg); border:1px solid #000;
-  width:600px; max-width:calc(100% - 120px);
-  padding:80px;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform:uppercase;
-  pointer-events:auto; z-index:9999;
-  box-sizing:border-box;
-  animation: fadeInWaiter 0.5s ease forwards;
+  position: fixed; top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; gap: 1.5rem;
+  background: var(--bg); border: 1px solid #000;
+  width: 600px; max-width: calc(100% - 120px);
+  padding: 80px; box-sizing: border-box;
+  opacity: 0; transition: opacity 0.5s ease;
+  pointer-events: auto; z-index: 9999;
 }
-@keyframes fadeInWaiter { to{ opacity:1; } }
-.waiter-option {
-  font-family:'Commit Mono',monospace;
-  border:1px solid #000; background:transparent;
-  color:#000; padding:0.5rem; width:100%;
-  text-align:center; cursor:pointer;
-  transition:all 0.2s ease;
-}
-.waiter-option:hover { background:#000; color:#fff; }
-.waiter-no {
-  align-self:center; position:relative;
-  color:inherit; text-decoration:none;
-}
-.waiter-no .link-text::after {
-  content:''; position:absolute;
-  left:0; bottom:-2px;
-  width:100%; height:1px;
-  background:currentColor;
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 0.3s ease;
-}
-.waiter-no:hover .link-text::after { transform:scaleX(1); }
+.popup.waiter-popup.ready { opacity: 1; }
 
-/* hide until ready */
-.popup.waiter-popup .waiter-option,
+/* — WAITer BUTTONS with 10px vertical padding — */
+.popup.waiter-popup .waiter-option {
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;   /* ← force all-caps */
+  border: 1px solid #000;
+  background: transparent;
+  color: #000;
+  padding: 10px 0;             /* 10px top/bottom */
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.popup.waiter-popup .waiter-option:hover {
+  background: #000;
+  color: var(--bg);
+}
 .popup.waiter-popup .waiter-no {
-  opacity:0; pointer-events:none;
-  transition:opacity 0.3s ease;
-}
-.popup.waiter-popup.ready .waiter-option,
-.popup.waiter-popup.ready .waiter-no {
-  opacity:1; pointer-events:auto;
+  align-self: center;
 }
 
-/* ─── PAYMENT POPUP ───────────────────────────────────────────────────────── */
 
-.popup.final-popup {
-  position: fixed; top:40%; left:50%;
-  transform:translate(-50%,-50%);
-  display:flex; flex-direction:column;
-  align-items:center; gap:1rem;
-  background: var(--bg); border:1px solid #000;
-  width:600px; max-width:calc(100% - 120px);
-  padding:80px;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform:uppercase;
-  text-align:center; box-sizing:border-box;
-  z-index:9999;
-}
-.popup.final-popup .pay-button {
-  font-family:'Commit Mono',monospace;
-  margin-top:20px; width:100%; padding:0.5rem;
-  text-align:center; border:1px solid #000;
-  background:transparent; cursor:pointer;
-  transition:all 0.2s ease;
-}
-.popup.final-popup .pay-button:hover {
-  background:#000; color:#fff;
-}
-
-/* ─── DIM-THE-LIGHTS OVERLAY ───────────────────────────────── */
-#dim-overlay {
+/* ─── CHEQUE/RECEIPT POPUP ───────────────────────────────────────────────── */
+.popup.cheque-popup {
   position: fixed;
-  inset: 0;                      /* top:0; right:0; bottom:0; left:0; */
-  background: rgba(0,0,0,0.5);   /* 50% black */
-  opacity: 0;
-  pointer-events: none;          /* clicks pass through */
-  transition: opacity 1s ease;   /* 1s fade */
-  z-index: 9999;                 /* above everything else */
+  top: 50%; bottom: auto;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  display: flex; flex-direction: column;
+  background: #fff; border: 0px solid #000;
+  padding: 40px; width: 400px; max-width: 90%;
+  box-sizing: border-box; z-index: 10000;
+  transition: transform 0.8s ease-out;
+}
+.popup.cheque-popup.visible {
+  transform: translate(-50%, -50%);
+}
+.popup.cheque-popup .cheque-header {
+  font-weight: bold; margin-bottom: 10px; text-align: center;
+}
+.popup.cheque-popup .cheque-items { width: 100%; }
+.popup.cheque-popup .cheque-item-row {
+  display: flex; justify-content: space-between; margin-bottom: 4px;
+}
+.popup.cheque-popup .cheque-line {
+  border: none; border-top: 1px dashed #000; margin: 10px 0;
+}
+.popup.cheque-popup .cheque-total {
+  display: flex; justify-content: space-between; font-weight: bold;
+  margin-bottom: 10px;
+}
+.popup.cheque-popup .pay-button {
+  font-family: 'Commit Mono', monospace;
+  width: 100%; padding: 0.5rem;
+  border: 1px solid #000; background: transparent;
+  color: #000; cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 10px;
+}
+.popup.cheque-popup .pay-button:hover {
+  background: #000; color: var(--bg);
+}
+.popup.cheque-popup .runner-link {
+  display: inline-block; margin-top: 1rem; text-decoration: none;
+}
+
+/* ─── OVERLAYS & CONTROLS ─────────────────────────────────────────────────── */
+#dim-overlay {
+  position: fixed; inset: 0;
+  background: rgba(43, 33, 6, 0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity 3s ease; z-index: 9999;
 }
 #dim-overlay.active {
   opacity: 1;
 }
-
-/* ─── JAZZ UI & LIGHT TOGGLE ─────────────────────────────────────────────── */
-
 #jazz-ui, #light-toggle {
-  position: fixed; bottom:20px; left:20px;
-  font-family:'Commit Mono',monospace;
-  font-size:0.8rem; text-transform:uppercase;
-  cursor:pointer; color:inherit;
-  z-index:9999;
-}
-#jazz-ui.hidden, #jazz-ui a.hidden, #light-toggle.hidden {
-  display:none !important;
-}
-/* remove any underline on play/pause */
-#jazz-ui button,
-#light-toggle {
-  background:none; border:none;
-  text-decoration:none !important;
-  margin:0; padding:0; line-height:1.2;
-}
-
-/* ─── MEDIA QUERIES ───────────────────────────────────────────────────────── */
-
-@media (max-width:728px) {
-  body { font-size:1.4rem; }
-  .intro { font-size:5.2vw; }
-  .floating-block { width:75px; height:75px; }
-  .popup.project-popup { max-width:240px; }
-  .popup.waiter-popup,
-  .popup.final-popup {
-    width:80vw !important;
-    max-width:none !important;
-    padding:20px !important;
-    left:50% !important;
-    transform:translateX(-50%) !important;
-  }
-}
-
-/* ─── JAZZ TOGGLE: match bill styling ───────────────────────────────────── */
-#jazz-toggle {
-  display: inline-block;               /* same as bill links */
+  position: fixed; bottom: 20px; left: 20px;
   font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  background: transparent;
-  border: none;
-  color: inherit;
-  margin-top: 0.5rem;                  /* same bottom spacing as .bill a */
-  cursor: pointer;
-  position: relative;
-  text-decoration: none;               /* remove default underline */
-  line-height: 1.2;                    /* align baseline with bill */
+  font-size: 0.8rem; text-transform: uppercase;
+  cursor: pointer; color: inherit; z-index: 9999;
 }
-
-/* kill any leftover pseudo-element underline */
-#jazz-toggle::after {
+#jazz-ui.hidden, #light-toggle.hidden {
   display: none !important;
-  content: none !important;
+}
+#jazz-ui button, #light-toggle {
+  background: none; border: none;
+  margin: 0; padding: 0; line-height: 1.2;
 }
 
-/* ─── POPUP LINKS: animated underline only under text ────────────────── */
-.popup a .link-text {
-  display: inline-block;
-  position: relative;
-}
-.popup a .link-text::after {
-  content: '';
-  position: absolute;
-  left: 0; bottom: -2px;
-  width: 100%; height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-.popup a:hover .link-text::after {
-  transform: scaleX(1);
-}
-
-/* reduce extra scroll space for footer reveal */
-.scroll-expander {
-  height: 30vh !important;
-}
-
-/* if you’re also using body padding-bottom as buffer */
-body {
-  padding-bottom: 30vh !important;
-}
-
-/* ─── TEXT SELECTION HIGHLIGHTS ───────────────────────────────────── */
-
-/* everywhere else: accent-coloured background, black text */
-::selection {
-  background-color: var(--accent);
-  color: #000;
-}
-
-/* inside the footer: black background, accent-coloured text */
-.footer ::selection {
-  background-color: #000;
-  color: var(--accent);
-}
-
-/* ─── BILL SLIDE-UP POPUP (centered) ─────────────────────────── */
-.popup.bill-popup {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;             /* let it size to its content, instead of 100vh */
-  /* keep your existing transform/transition rules here */
-}
-
-/* global selection highlight */
-::selection {
-  background-color: var(--accent);
-  color: #000;
-}
-
-/* footer gets the inverse */
-.footer ::selection {
-  background-color: #000;
-  color: var(--accent);
-}
-
-/* ─── “do a runner” link in final popup ─────────────────────────── */
-.popup.final-popup .runner-link {
-  display: inline-block;
-  margin-top: 1rem;
-  position: relative;
-  color: inherit;
-  text-decoration: none;
-}
-.popup.final-popup .runner-link .link-text::after {
-  content: '';
-  position: absolute;
-  left: 0; bottom: -2px;
-  width: 100%; height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-.popup.final-popup .runner-link:hover .link-text::after {
-  transform: scaleX(1);
-}
-
-/* ─── POLICE LIGHTS OVERLAY ──────────────────────────────────────── */
+/* ─── POLICE OVERLAY & POPUP ───────────────────────────────────────────────── */
 .police-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9998;
   animation: policeFlash 1s steps(1) infinite;
 }
 @keyframes policeFlash {
-  0%, 100% { background: rgba(0,  0,255, 0.7); }  /* vivid blue */
-  50%      { background: rgba(255,0,  0, 0.7); }  /* vivid red  */
+  0%,100% { background: rgba(0,0,255,0.7); }
+  50%     { background: rgba(255,0,0,0.7); }
 }
-
-/* ─── POLICE POPUP ───────────────────────────────────────────────── */
 .popup.police-popup {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: #fff;
-  border: 1px solid #000;
-  padding: 2rem;
-  font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  z-index: 9999;
-  box-sizing: border-box;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; gap: 1rem;
+  background: #fff; border: 1px solid #000;
+  padding: 2rem; box-sizing: border-box; z-index: 9999;
 }
 .popup.police-popup .ok-button {
   font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.8rem; text-transform: uppercase;
+  border: 1px solid #000; background: transparent;
+  color: #000; padding: 0.5rem;
+  cursor: pointer; align-self: center; width: 100px;
+  transition: background 0.2s, color 0.2s;
+}
+.popup.police-popup .ok-button:hover {
+  background: #000; color: #fff;
+}
+
+/* ─── MEDIA QUERIES ───────────────────────────────────────────────────────── */
+@media (max-width: 728px) {
+  body { font-size: 1.4rem; }
+  .intro { font-size: 5.2vw; }
+  .floating-block { width: 75px; height: 75px; }
+  .popup.project-popup { max-width: 240px; }
+  .popup.waiter-popup,
+  .popup.cheque-popup {
+    width: 80vw !important;
+    max-width: none !important;
+    padding: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  #footer .footer-inner {
+    padding: 0 !important;
+  }
+}
+
+/* ─── CHEQUE/RECEIPT POPUP UPDATES ────────────────────────────────────────── */
+.popup.cheque-popup {
+  /* drop-shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* 40px top/bottom, 60px left/right */
+  padding: 40px 60px;
+}
+
+/* header (company name + Pty Ltd) spacing */
+.popup.cheque-popup .cheque-header {
+  margin-bottom: 40px;
+}
+
+/* menu items block spacing */
+.popup.cheque-popup .cheque-items {
+  margin-bottom: 20px;
+}
+
+/* dashed lines with 20px above & below */
+.popup.cheque-popup hr.cheque-line {
+  margin: 20px 0;
+}
+
+/* PAY BILL button — mono, uppercase, 10px vertical padding, full-width, with hover */
+.popup.cheque-popup .pay-button {
+  font-family: 'Commit Mono', monospace;
   text-transform: uppercase;
   border: 1px solid #000;
   background: transparent;
   color: #000;
-  padding: 0.5rem;
+  padding: 10px 0;       /* <-- 10px top/bottom */
+  width: 100%;
   cursor: pointer;
-  align-self: center;
-  width: 100px;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.3s, color 0.3s;
+  margin-bottom: 20px;
 }
-.popup.police-popup .ok-button:hover {
+.popup.cheque-popup .pay-button:hover {
   background: #000;
-  color: #fff;
+  color: var(--bg);
+}
+
+/* DO A RUNNER link — uppercase, mono, spaced like “no thanks” */
+.popup.cheque-popup .runner-link {
+  display: inline-block;
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+/* final footer text (“WE SERVE TO SERVE AGAIN”) */
+.popup.cheque-popup .cheque-footer {
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* ─── CHEQUE DROP-SHADOW & LAYOUT TWEAKS ──────────────────────────────────── */
+.popup.cheque-popup {
+  /* increase blur to 24px and spread to 8px */
+  box-shadow: 0 8px 24px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* centre the “do a runner” link in the flex column */
+.popup.cheque-popup .runner-link {
+  align-self: center;
+  margin: 20px 0; /* preserve the 20px spacing above and below */
+}
+
+/* ensure dashed‐line spacing is correct */
+.popup.cheque-popup .cheque-line {
+  margin: 20px 0;
+}
+
+/* restore and style the footer slogan */
+.popup.cheque-popup .cheque-footer {
+  display: block;
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;
+  text-align: center;
+  color: #000;
+  margin: 20px 0;
+}
+
+.popup.cheque-popup .pay-button {
+  margin-bottom: 10px; /* gap to runner-button */
+}
+
+/* ─── CHEQUE POPUP BUTTONS: PAY & RUNNER ─────────────────────────────────── */
+.popup.cheque-popup .pay-button,
+.popup.cheque-popup .runner-button {
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;
+  border: 1px solid #000;
+  background: transparent;
+  color: #000;
+  padding: 10px 0;      /* 10px top & bottom */
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* 10px gap between the two buttons */
+.popup.cheque-popup .pay-button {
+  margin-bottom: 10px;
+}
+
+/* hover state */
+.popup.cheque-popup .pay-button:hover,
+.popup.cheque-popup .runner-button:hover {
+  background: #000;
+  color: var(--bg);
+}
+
+/* position both controls absolutely inside .intro */
+.intro {
+  position: relative; /* already set, but critical */
+}
+
+/* jazz UI & light-toggle in bottom-left of intro */
+#jazz-ui, #light-toggle {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 100; /* above footer when it slides */
+}
+
+/* if both appear, stack jazz above light-toggle */
+#jazz-ui { margin-bottom: 10px; }
+
+/* style the jazz-ui container if you like */
+.jazz-ui button {
+  font-family: 'Commit Mono', monospace;
+  text-transform: uppercase;
+  border: 1px solid #000;
+  background: transparent;
+  color: #000;
+  padding: 10px 0;
+  width: 100px; /* or auto as you prefer */
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.jazz-ui button:hover {
+  background: #000;
+  color: var(--bg);
+}
+
+/* --------------------------------------------------------------------------------
+   1) Make jazz toggle show up & be text-only
+   -------------------------------------------------------------------------------- */
+   #jazz-ui {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+  }
+  
+  #jazz-ui button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Commit Mono', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: inherit;
+  }
+  
+  /* --------------------------------------------------------------------------------
+     2) Make light toggle text-only
+     -------------------------------------------------------------------------------- */
+  #light-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Commit Mono', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+    color: inherit;
+  }
+  
+  /* --------------------------------------------------------------------------------
+     3) If you want to stack jazz above light-toggle, add a bit of spacing:
+     -------------------------------------------------------------------------------- */
+  #jazz-ui {
+    margin-bottom: 10px;
+  }
+
+  /* site‐wide text selection highlight */
+::selection {
+  background-color: var(--accent);
+  color: #000;
+}
+::-moz-selection {
+  background-color: var(--accent);
+  color: #000;
+}
+
+/* disable underline on the project title in the project popup */
+.popup.project-popup > .link-text::after {
+  display: none !important;
+}
+
+/* ─── THUMBNAILS: show/hide & click-through ───────────────────────────────── */
+
+/* 1) Container: fullscreen, hidden by default, never intercepts clicks */
+#sites-container,
+.sites {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  z-index: 3;
+
+  display: none;       /* hidden until you toggle .visible */
+}
+
+/* 2) When you toggle .visible: just flip display—still non-interactive so empty space passes clicks through */
+#sites-container.visible,
+.sites.visible {
+  display: block;
+  /* pointer-events: none;  (inherited—no need to restate) */
+}
+
+/* 3) Thumbnails themselves catch hovers & clicks */
+.floating-block {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* 4) Smaller thumbs on mobile */
+@media (max-width: 728px) {
+  .floating-block {
+    width: 75px;
+    height: 75px;
+  }
+}
+
+/* ─── THUMBNAILS: show/hide & pointer-events ─────────────────────────────── */
+
+/* 1) Container is full-screen but stays invisible to clicks, and hidden until toggled */
+#sites-container,
+.sites {
+  display: none;
+  pointer-events: none;
+}
+
+/* 2) When you add .visible, it shows—but still doesn’t intercept clicks itself */
+#sites-container.visible,
+.sites.visible {
+  display: block;
+  /* pointer-events: none;  ← inherited, no need to repeat */
+}
+
+/* 3) Only the floating blocks themselves ever handle hover & clicks */
+#sites-container.visible .floating-block,
+.sites.visible     .floating-block {
+  pointer-events: auto !important;
+  z-index: 1;   /* bring them above anything behind */
+}
+
+/* ─── 1) RELATIVE POSITIONING FOR JAZZ + LIGHT TOGGLE ───────────────────────── */
+.intro { position: relative; } /* ensure intro is the positioning context */
+#jazz-ui,
+#light-toggle {
+  position: absolute;  /* take them out of the fixed layer */
+  bottom: 20px;
+  left: 20px;
+  z-index: 2;          /* above intro content but below footer */
+}
+#jazz-ui { margin-bottom: 10px; } /* stack jazz above light */
+
+/* ─── 2) MOBILE FOOTER FULL-WIDTH + STACKED COLUMNS ──────────────────────────── */
+@media (max-width: 728px) {
+  /* Make the footer span edge-to-edge with 20px side padding */
+  #footer {
+    width: 100%;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  /* Stack the two columns vertically */
+  #footer .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #footer .footer-columns {
+    flex-direction: column;
+    gap: 1rem;  /* adjust as needed */
+    width: 100%;
+  }
+}
+
+/* ─── 3) BOLDER MOBILE TEXT & LARGER MOBILE THUMBNAILS ───────────────────────── */
+@media (max-width: 728px) {
+  body {
+    font-size: 1.6rem;   /* up from 1.4rem */
+  }
+  .floating-block {
+    width: 90px;         /* up from 75px */
+    height: 90px;
+  }
+}
+
+@media (max-width: 728px) {
+  /* 1) Make the footer span edge-to-edge with side padding */
+  #footer {
+    width: 100%;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+    background: var(--footer-bg); /* ensure you’re still using the variable */
+  }
+
+  /* 2) Stack the inner container & columns vertically */
+  #footer .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #footer .footer-columns {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* 3) Force each column to be full width, remove the desktop-only margin */
+  #footer .footer-left,
+  #footer .footer-right {
+    flex: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    text-align: left;
+  }
 }
