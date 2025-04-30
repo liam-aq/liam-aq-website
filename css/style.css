@@ -2,8 +2,7 @@
 /* ─── ROOT VARIABLES & FONTS ───────────────────────────────────────────────── */
 :root {
   --bg: #eeeee8;
-  --accent: #f1240d;
-  --footer-bg: #f1240d;
+  --accent: #eb720f;
 }
 
 @font-face {
@@ -24,11 +23,36 @@
 
 @font-face {
   font-family: 'Millionaire Script';
-  src: url('../fonts/Millionaire_Script.woff2') format('woff2');
+  src: url('../fonts/Millionaire_Script.woff') format('woff');
   font-style: italic;
   font-weight: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Millionaire Italic';
+  src: url('../fonts/Millionaire_Italic.woff') format('woff');
+  font-style: italic;
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Authentic Sans Condensed 90';
+  src: url('../fonts/authentic-sans-condensed-90.woff') format('woff');
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Authentic Sans Condensed 130';
+  src: url('../fonts/authentic-sans-condensed-130.woff') format('woff');
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+}
+
 
 
 /* ─── LINKS & UNDERLINES ───────────────────────────────────────────────── */
@@ -104,7 +128,7 @@ body {
   justify-content: center;
   align-items: flex-end;
   padding-bottom: 20px;
-  background: var(--footer-bg);
+  background: var(--accent);
   transform: translateY(100%);
   pointer-events: none;
   z-index: 10;
@@ -224,14 +248,15 @@ body {
 }
 
 /* ─── WAITER DIALOGUE STYLING ─────────────────────────────────────────────── */
-.popup.waiter-popup,
 .popup.waiter-popup p {
   /* use the cursive Millionaire Script for all dialogue text */
-  font-family: 'Millionaire Script', cursive;
+  font-family: 'PS Times', serif;
   /* sentence‐case rather than all‐caps */
   text-transform: none;
   /* bump up the base size */
-  font-size: 1.3rem;
+  font-size: 1.6rem;
+  line-height: 1.2 !important;
+  text-align: center;
 }
 
 /* ─── CHEQUE / RECEIPT POPUP ───────────────────────────────────────────────── */
@@ -250,7 +275,7 @@ body {
   box-sizing: border-box;
   z-index: 10000;
   transition: transform 0.8s ease-out;
-  box-shadow: 0 8px 24px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px 8px rgba(0, 0, 0, 0.1);
 }
 .popup.cheque-popup.visible {
   transform: translate(-50%, -50%);
@@ -448,11 +473,11 @@ body {
 @media (max-width: 728px) {
   /* Text sizing */
   body {
-    font-size: 1.8rem;
+    font-size: 2rem;
 
   }
   .intro {
-    font-size: 6vw;
+    font-size: 6.5vw !important;
   }
 
   /* Floating thumbnails */
@@ -491,7 +516,7 @@ body {
     right: 0;
     padding: 0 20px;
     box-sizing: border-box;
-    background: var(--footer-bg);
+    background: var(--accent);
   }
 
   #footer .footer-inner {
@@ -570,6 +595,7 @@ body {
   font-size: 3vw;
   line-height: 1.1;
   padding: 20px;
+  font-family: 'Authentic Sans Condensed 90', sans-serif;
 }
 
 .intro a {
@@ -703,7 +729,7 @@ body {
   justify-content: center;
   align-items: flex-end;
   padding-bottom: 20px;
-  background: var(--footer-bg);
+  background: var(--accent);
   transform: translateY(100%);
   pointer-events: none;
   z-index: 10;

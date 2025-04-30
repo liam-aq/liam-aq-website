@@ -13,6 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const floatCancels= new Set();
 
 // ────────────────────────────────────────────────────────────────
+// 00) SET ACCENT COLOUR
+// ────────────────────────────────────────────────────────────────
+
+  (function setRandomAccent() {
+    const colours = ['#ffcc01', '#f1240d', '#c4ff02', '#ff5a97', '#24a1e4', '#eb720f'];
+    const choice = colours[Math.floor(Math.random() * colours.length)];
+    document.documentElement.style.setProperty('--accent', choice);
+    // no need to set --footer-bg any more
+  })();
+
+// ────────────────────────────────────────────────────────────────
 // 1) PROJECT THUMBNAILS → GRID LAYOUT + FLOATING + POPUPS
 // ────────────────────────────────────────────────────────────────
 const projects = [
@@ -125,7 +136,7 @@ popup.addEventListener("mouseleave", () => {
     const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
 
     // use desktop start at 30%, mobile at 70%
-    const ratio = window.innerWidth <= 728 ? 0.7 : 0;
+    const ratio = window.innerWidth <= 728 ? 0.4 : 0;
     const start = totalScroll * ratio;
     const range = totalScroll * (1 - ratio);
 
