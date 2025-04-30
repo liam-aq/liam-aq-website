@@ -121,11 +121,16 @@ popup.addEventListener("mouseleave", () => {
   // 2) FOOTER PARALLAX SLIDE
   // ────────────────────────────────────────────────────────────────
   window.addEventListener("scroll", () => {
-    const footer  = document.getElementById("footer");
-    const trigger = window.innerHeight * 0.3;
-    const sc      = Math.min(window.scrollY, trigger);
-    const pct     = sc / trigger;
-    footer.style.transform     = `translateY(${100 - pct*100}%)`;
+    const footer     = document.getElementById("footer");
+    const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+    // use desktop start at 30%, mobile at 70%
+    const ratio = window.innerWidth <= 728 ? 0.7 : 0;
+    const start = totalScroll * ratio;
+    const range = totalScroll * (1 - ratio);
+
+    const sc  = Math.min(Math.max(window.scrollY - start, 0), range);    const pct = sc / range;
+    footer.style.transform     = `translateY(${100 - pct * 100}%)`;    
     footer.style.pointerEvents = pct > 0.1 ? "auto" : "none";
   });
 

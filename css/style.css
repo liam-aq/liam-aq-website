@@ -87,28 +87,6 @@ body {
   pointer-events: none;
 }
 
-/* ─── HERO & INTRO ─────────────────────────────────────────────────────────── */
-.hero {
-  position: relative;
-  width: 100vw;
-  min-height: 100vh;
-  pointer-events: none;
-}
-.intro {
-  position: relative;
-  z-index: 2;
-  pointer-events: auto;
-  font-size: 3vw;
-  line-height: 1.1;
-  padding: 20px;
-}
-.intro a {
-  color: inherit;
-}
-.intro p {
-  margin-top: 0;
-}
-
 /* ─── TOGGLE LINK STYLING ─────────────────────────────────────────────────── */
 /* remove underline on our toggle link */
 #toggle-websites.link-text::after {
@@ -471,6 +449,7 @@ body {
   /* Text sizing */
   body {
     font-size: 1.8rem;
+
   }
   .intro {
     font-size: 6vw;
@@ -538,6 +517,7 @@ body {
 @media (max-width: 728px) {
   body {
     font-size: 1.6rem;
+    padding-bottom: 60vh;
   }
   .floating-block {
     width: 90px;
