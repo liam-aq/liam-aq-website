@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ────────────────────────────────────────────────────────────────
 
   (function setRandomAccent() {
-    const colours = ['#ffcc01', '#f1240d', '#c4ff02', '#199bf7', '#19a9f7'];
+    const colours = ['#ffcc01', '#f1240d', '#19a9f7'];
     const choice = colours[Math.floor(Math.random() * colours.length)];
     document.documentElement.style.setProperty('--accent', choice);
     // no need to set --footer-bg any more
@@ -34,99 +34,51 @@ const projects = [
   { name:'oishii dry',  image:'oishii-dry.png',  client:'Oishii Dry',   work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',               link:'https://www.oishiiworld.com.au/'}
 ];
 
-function layoutThumbnails() {
-  // clear & reset
-  floatCancels.forEach(fn => fn());
-  floatCancels.clear();
-  sitesContainer.innerHTML = "";
-  popup.style.display = "none";
+// ─── STATIC INTRO-THUMBS POPUPS & CLICK HANDLERS ─────────────────────────────────────────────────
+document.querySelectorAll('.intro-thumb').forEach(thumb => {
+  const key     = thumb.dataset.project.toLowerCase();
+  const project = projects.find(p => p.client.toLowerCase() === key);
+  if (!project) return;
 
-  const thumbSize = window.innerWidth <= 728 ? 75 : 120;
-  const count     = projects.length;
-  const cols      = Math.ceil(Math.sqrt(count));
-  const rows      = Math.ceil(count / cols);
-  const cellW     = sitesContainer.clientWidth  / cols;
-  const cellH     = sitesContainer.clientHeight / rows;
+  // set pointer cursor on desktop only
+  thumb.style.cursor = window.innerWidth > 728 ? 'pointer' : 'default';
 
-  projects.forEach((project, i) => {
-    const block = document.createElement("div");
-    block.className = "floating-block";
-    block.style.backgroundImage = `url(images/${project.image})`;
-
-    // position
-    const col = i % cols,
-          row = Math.floor(i / cols),
-          x   = col * cellW + (cellW - thumbSize) / 2,
-          y   = row * cellH + (cellH - thumbSize) / 2;
-    block.style.cssText += `
-      width: ${thumbSize}px;
-      height: ${thumbSize}px;
-      left: ${x}px;
-      top: ${y}px;
-    `;
-
-    // fade-in
-    block.style.opacity    = "0";
-    block.style.transition = "opacity 1s ease";
-    sitesContainer.appendChild(block);
-    setTimeout(() => block.style.opacity = "1", Math.random() * 1000);
-
-    // floating motion
-    let vx = (Math.random() - 0.5) * 0.5,
-        vy = (Math.random() - 0.5) * 0.5,
-        cancelled = false;
-    (function floatLoop() {
-      if (cancelled) return;
-      if (!block.classList.contains("paused")) {
-        let nx = parseFloat(block.style.left),
-            ny = parseFloat(block.style.top);
-        nx += vx; ny += vy;
-        if (nx < 0 || nx > sitesContainer.clientWidth - thumbSize) vx *= -1;
-        if (ny < 0 || ny > sitesContainer.clientHeight - thumbSize) vy *= -1;
-        block.style.left = `${nx}px`;
-        block.style.top  = `${ny}px`;
-      }
-      requestAnimationFrame(floatLoop);
-    })();
-    floatCancels.add(() => cancelled = true);
-
-    // show popup
-    block.addEventListener("mouseenter", e => {
+  // hover to show popup (desktop only)
+  if (window.innerWidth > 728) {
+    thumb.addEventListener('mouseenter', e => {
       clearTimeout(popupHideTimeout);
-      console.log("mouseenter on project:", project.client);
-      showProjectPopupFor(block, project);
+      showProjectPopupFor(thumb, project);
     });
-    block.addEventListener("click", e => {
-      clearTimeout(popupHideTimeout);
-      console.log("click on project:", project.client);
-      showProjectPopupFor(block, project);
-    });
-
-    // hide popup on leave, with 200ms grace
-    block.addEventListener("mouseleave", () => {
+    thumb.addEventListener('mouseleave', () => {
       clearTimeout(popupHideTimeout);
       popupHideTimeout = setTimeout(() => {
         if (!isOverPopup) hidePopup();
       }, 200);
     });
+  }
+
+  // click: open link on desktop, show popup on mobile
+  thumb.addEventListener('click', e => {
+    e.preventDefault();
+    clearTimeout(popupHideTimeout);
+    if (window.innerWidth > 728) {
+      window.open(project.link, '_blank');
+    } else {
+      showProjectPopupFor(thumb, project);
+    }
   });
-}
+});
 
-layoutThumbnails();
-window.addEventListener("resize", layoutThumbnails);
-
-// hide on popup mouseenter/leave (already in your code)
-popup.addEventListener("mouseenter", () => {
+// keep your popup’s own mouseenter/leave logic intact:
+popup.addEventListener('mouseenter', () => {
   clearTimeout(popupHideTimeout);
   isOverPopup = true;
-  activeBlock?.classList.add("paused");
 });
-popup.addEventListener("mouseleave", () => {
+popup.addEventListener('mouseleave', () => {
   isOverPopup = false;
   clearTimeout(popupHideTimeout);
   popupHideTimeout = setTimeout(hidePopup, 200);
 });
-
 
   // ────────────────────────────────────────────────────────────────
   // 2) FOOTER PARALLAX SLIDE
