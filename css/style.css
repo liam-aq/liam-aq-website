@@ -965,15 +965,12 @@ body {
   body { font-size: 1.8rem; }
   .intro { font-size: 6vw; }
 
-  /* project popups */
-  .popup.project-popup { max-width: 240px; }
-
   /* waiter & cheque popups full-width */
   .popup.waiter-popup,
   .popup.cheque-popup {
     width: 80vw !important;
     max-width: none !important;
-    padding: 20px !important;
+    padding: 40px !important;
     top: 25% !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
