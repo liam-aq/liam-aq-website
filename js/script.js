@@ -30,6 +30,7 @@ const projects = [
   { name:'weekdays',    image:'weekdays.gif',    client:'Weekdays',     work:'website',               year:'2025', description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.', link:'https://week-days.com.au/'},
   { name:'studio blank',image:'studio-blank.gif',client:'studio blank', work:'website, motion design', year:'2024', description:'A quirky website for a furniture studio (via Weekdays).',             link:'https://www.studioblank.com.au/' },
   { name:'veraison',    image:'veraison.png',    client:'veraison',     work:'brand, website, print',  year:'2025', description:'A print-turned-digital wine & culture zine.',                       link:'https://www.veraisonmag.com/' },
+  { name:'anti-doomdruff',    image:'shampoo.png',    client:'anti-doomdruff',     work:'website',  year:'2025', description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.', link:'https://antidoomdruff.com/' },
   { name:'claire adey', image:'claire-adey.gif', client:'claire adey',  work:'website',               year:'2025', description:'A portfolio website for a foodie needs a good cookies section.',      link:'https://www.claireadey.com/' },
   { name:'oishii dry',  image:'oishii-dry.png',  client:'Oishii Dry',   work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',               link:'https://www.oishiiworld.com.au/'}
 ];
