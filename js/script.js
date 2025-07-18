@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ────────────────────────────────────────────────────────────────
 
   (function setRandomAccent() {
-    const colours = ['#ffcc01', '#f1240d', '#19a9f7'];
+    const colours = ['#f1240d'];
     const choice = colours[Math.floor(Math.random() * colours.length)];
     document.documentElement.style.setProperty('--accent', choice);
     // no need to set --footer-bg any more
