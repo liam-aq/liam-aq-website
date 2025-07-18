@@ -34,12 +34,58 @@ document.addEventListener("DOMContentLoaded", () => {
 // 1) PROJECT THUMBNAILS → GRID LAYOUT + FLOATING + POPUPS
 // ────────────────────────────────────────────────────────────────
 const projects = [
-  { name:'Weekdays',    image:'weekdays.gif',    client:'Weekdays',     work:'website',               year:'2025', description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.', link:'https://week-days.com.au/'},
-  { name:'Studio Blank',image:'studio-blank.gif',client:'Studio Blank', work:'website, motion design', year:'2024', description:'A quirky website for a furniture studio (via Weekdays).',             link:'https://www.studioblank.com.au/' },
-  { name:'Veraison',    image:'veraison.png',    client:'Veraison',     work:'brand, website, print',  year:'2025', description:'A print-turned-digital wine & culture zine.',                       link:'https://www.veraisonmag.com/' },
-  { name:'Anti-Doomdruff',    image:'shampoo.png',    client:'Self',     work:'website',  year:'2025', description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.', link:'https://antidoomdruff.com/' },
-  { name:'Claire Adey', image:'claire-adey.gif', client:'Claire Adey',  work:'website', year:'2025', description:'A portfolio website for a foodie needs a good cookies section.',      link:'https://www.claireadey.com/' },
-  { name:'Oishii Dry',  image:'oishii-dry.png',  client:'Oishii Dry',   work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',               link:'https://www.oishiiworld.com.au/'}
+  { name:'Weekdays',
+    image:'weekdays.gif',
+    images: [], client:'Weekdays',
+    work:'website',
+    year:'2025',
+    description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.',
+    link:'https://week-days.com.au/'},
+
+  { name:'Studio Blank',
+    image:'studio-blank.gif',
+    images: [],
+    client:'Studio Blank',
+    work:'website, motion design',
+    year:'2024',
+    description:'A quirky website for a furniture studio (via Weekdays).',
+    link:'https://www.studioblank.com.au/' },
+
+  { name:'Veraison',
+    image:'veraison.png',
+    images: ["veraison-1.png", "veraison-2.png", "veraison-3.png", "veraison-4.png", "veraison-5.png", "veraison-6.png", "veraison-7.png"],
+    client:'Veraison',
+    work:'brand, website, print',
+    year:'2025',
+    description:'A print-turned-digital wine & culture zine.',
+    link:'https://www.veraisonmag.com/' },
+
+  { name:'Anti-Doomdruff',
+    image:'shampoo.png',
+    images: [],
+    client:'Self',
+    work:'website',
+    year:'2025',
+    description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.',
+    link:'https://antidoomdruff.com/' },
+
+  { name:'Claire Adey',
+    image:'claire-adey.gif',
+    images: [],
+    client:'Claire Adey',
+    work:'website',
+    year:'2025',
+    description:'A portfolio website for a foodie needs a good cookies section.',
+    link:'https://www.claireadey.com/' },
+
+  { name:'Oishii Dry',
+    image:'oishii-dry.png',
+    images: [],
+    client:'Oishii Dry',
+    work:'brand, website, packaging',
+    year:'2025',
+    description:'A local yuzu rice lager with Japanese sensibilities.',
+    link:'https://www.oishiiworld.com.au/'}
 ];
 
   // ─── Populate project list from projects array ─────────────────────
@@ -56,6 +102,7 @@ const projects = [
       li.dataset.year        = p.year;
       li.dataset.description = p.description;
       li.dataset.link        = p.link;
+      li.dataset.images      = JSON.stringify(p.images || []);
       const titleSpan = document.createElement('span');
       titleSpan.className = 'project-title';
       titleSpan.textContent = p.name;
@@ -462,6 +509,9 @@ function showPayment() {
     e.preventDefault();
     document.getElementById("waiter-bill")?.remove();
     pay.remove();
+    if (!jazzPlayer.paused) jazzPlayer.pause();
+    const siren = new Audio('assets/siren.mp3');
+    siren.play();
     showPolice();
   };
 }
@@ -652,17 +702,29 @@ function hidePopup() {
       projectList.querySelectorAll('.project-accordion').forEach(div => div.remove());
       projectList.querySelectorAll('.project-item.selected').forEach(li => li.classList.remove('selected'));
 
-      // Build and insert new accordion panel
+      // Build accordion panel with dynamic images
       item.classList.add('selected');
       const details = document.createElement('div');
       details.className = 'project-accordion';
-      details.innerHTML = `
+      // start HTML
+      let html = `
         <p><strong>Client:</strong> ${item.dataset.client}</p>
         <p><strong>Work:</strong> ${item.dataset.work}</p>
         <p><strong>Year:</strong> ${item.dataset.year}</p>
         <p>${item.dataset.description}</p>
-        <p><a href="${item.dataset.link}" target="_blank" class="link-text">Visit site</a></p>
       `;
+      // insert all images inside a scrolling flex container
+      const imgs = JSON.parse(item.dataset.images || '[]');
+      if (imgs.length) {
+        html += `<div class="project-accordion-images">`;
+        imgs.forEach(src => {
+          html += `<img src="images/${src}" alt="${item.dataset.name}" class="project-accordion-image" />`;
+        });
+        html += `</div>`;
+      }
+      // finish with link
+      html += `<p><a href="${item.dataset.link}" target="_blank" class="link-text">Visit site</a></p>`;
+      details.innerHTML = html;
       item.appendChild(details);
     });
   }
