@@ -3,9 +3,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ────────────────────────────────────────────────────────────────
   // 0) Shared state & DOM references
   // ────────────────────────────────────────────────────────────────
-  const popup          = document.getElementById("popup");
+  let popup = document.getElementById("popup");
+  if (!popup) {
+    popup = document.createElement("div");
+    popup.id = "popup";
+    popup.className = "popup project-popup";
+    document.body.appendChild(popup);
+  } else if (!popup.isConnected) {
+    document.body.appendChild(popup);
+  }
   const sitesContainer = document.getElementById("sites-container") || document.querySelector(".sites");
-  document.body.appendChild(popup);
 
   let activeBlock   = null;
   let isOverPopup   = false;
@@ -27,13 +34,35 @@ document.addEventListener("DOMContentLoaded", () => {
 // 1) PROJECT THUMBNAILS → GRID LAYOUT + FLOATING + POPUPS
 // ────────────────────────────────────────────────────────────────
 const projects = [
-  { name:'weekdays',    image:'weekdays.gif',    client:'Weekdays',     work:'website',               year:'2025', description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.', link:'https://week-days.com.au/'},
-  { name:'studio blank',image:'studio-blank.gif',client:'studio blank', work:'website, motion design', year:'2024', description:'A quirky website for a furniture studio (via Weekdays).',             link:'https://www.studioblank.com.au/' },
-  { name:'veraison',    image:'veraison.png',    client:'veraison',     work:'brand, website, print',  year:'2025', description:'A print-turned-digital wine & culture zine.',                       link:'https://www.veraisonmag.com/' },
-  { name:'anti-doomdruff',    image:'shampoo.png',    client:'anti-doomdruff',     work:'website',  year:'2025', description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.', link:'https://antidoomdruff.com/' },
-  { name:'claire adey', image:'claire-adey.gif', client:'claire adey',  work:'website',               year:'2025', description:'A portfolio website for a foodie needs a good cookies section.',      link:'https://www.claireadey.com/' },
-  { name:'oishii dry',  image:'oishii-dry.png',  client:'Oishii Dry',   work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',               link:'https://www.oishiiworld.com.au/'}
+  { name:'Weekdays',    image:'weekdays.gif',    client:'Weekdays',     work:'website',               year:'2025', description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.', link:'https://week-days.com.au/'},
+  { name:'Studio Blank',image:'studio-blank.gif',client:'Studio Blank', work:'website, motion design', year:'2024', description:'A quirky website for a furniture studio (via Weekdays).',             link:'https://www.studioblank.com.au/' },
+  { name:'Veraison',    image:'veraison.png',    client:'Veraison',     work:'brand, website, print',  year:'2025', description:'A print-turned-digital wine & culture zine.',                       link:'https://www.veraisonmag.com/' },
+  { name:'Anti-Doomdruff',    image:'shampoo.png',    client:'Self',     work:'website',  year:'2025', description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.', link:'https://antidoomdruff.com/' },
+  { name:'Claire Adey', image:'claire-adey.gif', client:'Claire Adey',  work:'website', year:'2025', description:'A portfolio website for a foodie needs a good cookies section.',      link:'https://www.claireadey.com/' },
+  { name:'Oishii Dry',  image:'oishii-dry.png',  client:'Oishii Dry',   work:'brand, website, packaging',year:'2025', description:'A local yuzu rice lager with Japanese sensibilities.',               link:'https://www.oishiiworld.com.au/'}
 ];
+
+  // ─── Populate project list from projects array ─────────────────────
+  const projectListEl = document.getElementById('project-list');
+  if (projectListEl) {
+    projectListEl.innerHTML = '';
+    projects.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'project-item';
+      li.dataset.name        = p.name;
+      li.dataset.image       = `images/${p.image}`;
+      li.dataset.client      = p.client;
+      li.dataset.work        = p.work;
+      li.dataset.year        = p.year;
+      li.dataset.description = p.description;
+      li.dataset.link        = p.link;
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'project-title';
+      titleSpan.textContent = p.name;
+      li.appendChild(titleSpan);
+      projectListEl.appendChild(li);
+    });
+  }
 
 // ─── STATIC INTRO-THUMBS POPUPS & CLICK HANDLERS ─────────────────────────────────────────────────
 document.querySelectorAll('.intro-thumb').forEach(thumb => {
@@ -509,78 +538,12 @@ function hidePopup() {
 
 // ────────────────────────────────────────────────────────────────
 
-// ────────────────────────────────────────────────────────────────
-// 7) TOGGLE “View / Hide Websites” LINK → REVEAL STATIC .intro-thumbs
-// ────────────────────────────────────────────────────────────────
-;(function initWebsiteToggle(){
-  const toggle = document.getElementById('toggle-websites');
-  const introThumbs = document.querySelector('.intro-thumbs');
-
-  // make sure your CSS has .intro-thumbs { height:0; overflow:hidden; transition:height 0.5s ease; }
-
-  // initial state
-  introThumbs.style.height = '0';
-  toggle.textContent = 'View some of my websites.';
-
-  toggle.addEventListener('click', e => {
-    e.preventDefault();
-    const opening = introThumbs.classList.toggle('visible');
-    if (opening) {
-      toggle.textContent = 'Hide websites.';
-      introThumbs.style.height = introThumbs.scrollHeight + 'px';
-    } else {
-      toggle.textContent = 'View some of my websites.';
-      introThumbs.style.height = '0';
-    }
-  });
-})();
-
-// ────────────────────────────────────────────────────────────────
-// STATIC INTRO-THUMBS POPUPS (20px below, left-aligned + hover delay)
-// ────────────────────────────────────────────────────────────────
-document.querySelectorAll('.intro-thumb').forEach(thumb => {
-  const key     = thumb.dataset.project.toLowerCase();
-  const project = projects.find(p => p.client.toLowerCase() === key);
-  if (!project) return;
-
-  // desktop hover → popup
-  thumb.addEventListener('mouseenter', () => {
-    console.log('intro-thumb mouseenter:', thumb.dataset.project);
-    showProjectPopupFor(thumb, project);
-  });
-
-  // click/tap → popup
-  thumb.addEventListener('click', () => {
-    console.log('intro-thumb click:', thumb.dataset.project);
-    showProjectPopupFor(thumb, project);
-  });
-
-  // hide on leave, with 200ms grace so you can move into popup
-  thumb.addEventListener('mouseleave', () => {
-    clearTimeout(popupHideTimeout);
-    popupHideTimeout = setTimeout(() => {
-      if (!isOverPopup) hidePopup();
-    }, 200);
-  });
-});
-
-// keep track when cursor is in the popup itself
-popup.addEventListener('mouseenter', () => {
-  clearTimeout(popupHideTimeout);
-  isOverPopup = true;
-  activeBlock?.classList.add('paused');
-});
-popup.addEventListener('mouseleave', () => {
-  isOverPopup = false;
-  clearTimeout(popupHideTimeout);
-  popupHideTimeout = setTimeout(hidePopup, 200);
-});
-
-// ────────────────────────────────────────────────────────────────
-// 8) EMAIL COPY & TOOLTIP
-// ────────────────────────────────────────────────────────────────
 ;(function(){
   const emailLink = document.getElementById('email-link');
+  if (!emailLink) {
+    console.warn('No email link found; skipping tooltip.');
+    return;
+  }
   const address   = emailLink.textContent;
   let tooltipEl;
 
@@ -623,4 +586,84 @@ popup.addEventListener('mouseleave', () => {
   });
 })();
 
+  // ─── Toggle Home vs Sites (delegated) ─────────────────────────────
+  document.body.addEventListener('click', e => {
+    // View sites toggle
+    const viewBtn = e.target.closest('#view-sites');
+    if (viewBtn) {
+      e.preventDefault();
+      document.getElementById('home-content').style.display = 'none';
+      document.getElementById('sites-content').style.display = 'block';
+      return;
+    }
+    // Back to home toggle
+    const backBtn = e.target.closest('#back-button');
+    if (backBtn) {
+      e.preventDefault();
+      document.getElementById('sites-content').style.display = 'none';
+      document.getElementById('home-content').style.display = 'block';
+      return;
+    }
+  });
+
+  // ─── Project List Hover & Accordion ─────────────────────────────
+  const projectList = document.getElementById('project-list');
+  const thumbnailPreview = document.getElementById('thumbnail-preview');
+  if (!projectList || !thumbnailPreview) {
+    console.warn('Project list or thumbnail preview missing; skipping accordion init.');
+  } else {
+    let currentProject = null;
+
+    // Hover → show thumbnail under cursor (only on title)
+    projectList.addEventListener('mousemove', e => {
+      const title = e.target.closest('.project-title');
+      if (!title) {
+        thumbnailPreview.style.display = 'none';
+        return;
+      }
+      const item = title.closest('.project-item');
+      thumbnailPreview.style.backgroundImage = `url('${item.dataset.image}')`;
+      thumbnailPreview.style.left = `${e.pageX + 16}px`;
+      thumbnailPreview.style.top  = `${e.pageY + 16}px`;
+      thumbnailPreview.style.display = 'block';
+    });
+
+    projectList.addEventListener('mouseleave', () => {
+      thumbnailPreview.style.display = 'none';
+    });
+
+    // Click → accordion toggle (only on title)
+    projectList.addEventListener('click', e => {
+      const title = e.target.closest('.project-title');
+      if (!title) return;
+      const item = title.closest('.project-item');
+      // Only toggle when clicking the title, ignore clicks inside details
+      if (e.target.closest('.project-accordion')) return;
+
+      // If already open, close it
+      const existing = item.querySelector('.project-accordion');
+      if (existing) {
+        existing.remove();
+        item.classList.remove('selected');
+        return;
+      }
+
+      // Close any other open accordions
+      projectList.querySelectorAll('.project-accordion').forEach(div => div.remove());
+      projectList.querySelectorAll('.project-item.selected').forEach(li => li.classList.remove('selected'));
+
+      // Build and insert new accordion panel
+      item.classList.add('selected');
+      const details = document.createElement('div');
+      details.className = 'project-accordion';
+      details.innerHTML = `
+        <p><strong>Client:</strong> ${item.dataset.client}</p>
+        <p><strong>Work:</strong> ${item.dataset.work}</p>
+        <p><strong>Year:</strong> ${item.dataset.year}</p>
+        <p>${item.dataset.description}</p>
+        <p><a href="${item.dataset.link}" target="_blank" class="link-text">Visit site</a></p>
+      `;
+      item.appendChild(details);
+    });
+  }
 }); // end DOMContentLoaded

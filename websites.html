@@ -1,0 +1,75 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Some of My Websites</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="index.html" class="back-link link-text">Back</a>
+  </header>
+
+  <main>
+    <ul id="project-list">
+      <li class="project-item"
+          data-name="Weekdays"
+          data-image="images/weekdays.gif"
+          data-client="Weekdays"
+          data-year="2025"
+          data-description="A clean and minimal website, unless you want it not to be. Built for Weekdays at Weekdays."
+          data-link="https://week-days.com.au/">
+        Weekdays
+      </li>
+      <li class="project-item"
+          data-name="Studio Blank"
+          data-image="images/studio-blank.gif"
+          data-client="studio blank"
+          data-year="2024"
+          data-description="A quirky website for a furniture studio (via Weekdays)."
+          data-link="https://www.studioblank.com.au/">
+        Studio Blank
+      </li>
+      <li class="project-item"
+          data-name="Veraison"
+          data-image="images/veraison.png"
+          data-client="veraison"
+          data-year="2025"
+          data-description="A print-turned-digital wine and culture zine."
+          data-link="https://www.veraisonmag.com/">
+        Veraison
+      </li>
+      <li class="project-item"
+          data-name="Claire Adey"
+          data-image="images/claire-adey.gif"
+          data-client="claire adey"
+          data-year="2025"
+          data-description="A portfolio website for a foodie needs a good cookies section."
+          data-link="https://www.claireadey.com/">
+        Claire Adey
+      </li>
+      <li class="project-item"
+          data-name="Oishii Dry"
+          data-image="images/oishii-dry.png"
+          data-client="Oishii Dry"
+          data-year="2025"
+          data-description="A local yuzu rice lager with Japanese sensibilities."
+          data-link="https://www.oishiiworld.com.au/">
+        Oishii Dry
+      </li>
+    </ul>
+
+    <!-- Thumbnail preview follows cursor on hover -->
+    <div id="thumbnail-preview" class="thumbnail-preview"></div>
+
+    <!-- Project info expands on click -->
+    <div id="project-details" class="project-details"></div>
+  </main>
+
+  <!-- Hook up hover & click behavior in JS -->
+  <script src="js/sites.js"></script>
+</body>
+</html>

@@ -6,29 +6,24 @@
   <title>Liam Alexander Quinn</title>
   <link rel="stylesheet" href="css/style.css" />
 
-    <!-- page title -->
-    <title>Liam Alexander Quinn</title>
+  <!-- meta description for SEO & social previews -->
+  <meta name="description" content="liam alexander quinn is a graphic designer">
 
-    <!-- meta description for SEO & social previews -->
-    <meta name="description" content="liam alexander quinn is a graphic designer">
-  
-    <!-- favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
-    <!-- apple touch icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png">
-  
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Liam Alexander Quinn – Portfolio">
-    <meta property="og:description" content="liam alexander quinn is a graphic designer">
-    <meta property="og:image" content="/images/favicon.png">
-    <meta property="og:type" content="website">
-  
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Liam Alexander Quinn – Portfolio">
-    <meta name="twitter:description" content="liam alexander quinn is a graphic designer">
-    <meta name="twitter:image" content="/images/favicon.png">
-  
+  <!-- favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Liam Alexander Quinn – Portfolio">
+  <meta property="og:description" content="liam alexander quinn is a graphic designer">
+  <meta property="og:image" content="/images/favicon.png">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Liam Alexander Quinn – Portfolio">
+  <meta name="twitter:description" content="liam alexander quinn is a graphic designer">
+  <meta name="twitter:image" content="/images/favicon.png">
 </head>
 <body>
 
@@ -41,6 +36,7 @@
     <button id="jazz-toggle" class="jazz-toggle">pause</button>
   </div>
 
+  <div id="home-content">
   <section class="hero">
     <div class="intro">
       <p>
@@ -51,25 +47,14 @@
         </span>
         <span class="intro-rest">I am Liam Alexander Quinn, a graphic designer based in Naarm/Melbourne.</span>
         I design and build websites and brands. Creative people, hospitality businesses, and the broader food and beverage space are my bread and butter, but I'm very open to taking on all sorts of work. I can do motion graphics, video editing, identity design, ad campaigns, and 12 pushups.
-        <a href="#" id="toggle-websites" class="link-text">View some of my websites.</a>
+        <a href="#" id="view-sites" class="link-text">View some of my websites.</a>
       </p>
-
-        <div class="intro-thumbs">
-          <div class="intro-thumb" data-project="weekdays" style="background-image:url(images/weekdays.gif)"></div>
-          <div class="intro-thumb" data-project="studio blank" style="background-image:url(images/studio-blank.gif)"></div>
-          <div class="intro-thumb" data-project="veraison" style="background-image:url(images/veraison.png)"></div>
-          <div class="intro-thumb" data-project="anti-doomdruff" style="background-image:url(images/shampoo.png)"></div>
-          <div class="intro-thumb" data-project="claire adey" style="background-image:url(images/claire-adey.gif)"></div>
-          <div class="intro-thumb" data-project="oishii dry" style="background-image:url(images/oishii-dry.png)"></div>
-      </div>
       
       <p>
         I’m currently freelancing, and taking on new clients. Previously I worked at Weekdays, a branding studio here in Melbourne, and before that at Blackhearts & Sparrows as their lead designer. If you are interested in working together, send me an email at
         <a href="#" id="email-link">hello@liamalexanderquinn.com</a> or call for a free quote on (03) 4829 9928.
       </p>
 
-      <!-- BILL (will scroll with .intro) -->
-      <div id="waiter-bill" class="bill"></div>
     </div>
   </section>
 
@@ -108,6 +93,18 @@
       <span class="link-text" id="pay-amount">PAY LIAM $0.00 AUD</span>
     </a>
   </div>
+  </div> <!-- /#home-content -->
+
+  <div id="waiter-bill" class="bill"></div>
+
+<div id="sites-content" style="display:none;">
+  <button id="back-button" class="back-link">Back</button>
+
+  <ul id="project-list"></ul>
+
+  <div id="thumbnail-preview" class="thumbnail-preview"></div>
+  <div id="project-details" class="project-details"></div>
+</div>
 
   <script src="js/script.js"></script>
 </body>
