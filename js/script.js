@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ────────────────────────────────────────────────────────────────
 
   (function setRandomAccent() {
-    const colours = ['#f1240d'];
+    const colours = ['#f1240d', '#0062FF', '#FF9D00'];
     const choice = colours[Math.floor(Math.random() * colours.length)];
     document.documentElement.style.setProperty('--accent', choice);
     // no need to set --footer-bg any more
@@ -37,7 +37,7 @@ const projects = [
   { name:'Weekdays',
     image:'weekdays.gif',
     images: [], client:'Weekdays',
-    work:'website',
+    work:'Website',
     year:'2025',
     description:'A clean and minimal website (unless you want it not to be). Built for Weekdays.',
     link:'https://week-days.com.au/'},
@@ -46,7 +46,7 @@ const projects = [
     image:'studio-blank.gif',
     images: [],
     client:'Studio Blank',
-    work:'website, motion design',
+    work:'Website, Motion Design',
     year:'2024',
     description:'A quirky website for a furniture studio (via Weekdays).',
     link:'https://www.studioblank.com.au/' },
@@ -55,7 +55,7 @@ const projects = [
     image:'veraison.png',
     images: ["veraison-1.png", "veraison-2.png", "veraison-3.png", "veraison-4.png", "veraison-5.png", "veraison-6.png", "veraison-7.png"],
     client:'Veraison',
-    work:'brand, website, print',
+    work:'Brand, Website, Print',
     year:'2025',
     description:'A print-turned-digital wine & culture zine.',
     link:'https://www.veraisonmag.com/' },
@@ -64,7 +64,7 @@ const projects = [
     image:'shampoo.png',
     images: [],
     client:'Self',
-    work:'website',
+    work:'Website',
     year:'2025',
     description:'Before phones, we would just read a shampoo bottle on the toilet. Reject doomscrolling, embrace tradition.',
     link:'https://antidoomdruff.com/' },
@@ -73,7 +73,7 @@ const projects = [
     image:'claire-adey.gif',
     images: [],
     client:'Claire Adey',
-    work:'website',
+    work:'Website',
     year:'2025',
     description:'A portfolio website for a foodie needs a good cookies section.',
     link:'https://www.claireadey.com/' },
@@ -82,7 +82,7 @@ const projects = [
     image:'oishii-dry.png',
     images: [],
     client:'Oishii Dry',
-    work:'brand, website, packaging',
+    work:'Brand, Website, Packaging',
     year:'2025',
     description:'A local yuzu rice lager with Japanese sensibilities.',
     link:'https://www.oishiiworld.com.au/'}
@@ -157,22 +157,6 @@ popup.addEventListener('mouseleave', () => {
   popupHideTimeout = setTimeout(hidePopup, 200);
 });
 
-  // ────────────────────────────────────────────────────────────────
-  // 2) FOOTER PARALLAX SLIDE
-  // ────────────────────────────────────────────────────────────────
-  window.addEventListener("scroll", () => {
-    const footer     = document.getElementById("footer");
-    const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-
-    // use desktop start at 30%, mobile at 70%
-    const ratio = window.innerWidth <= 728 ? 0.4 : 0;
-    const start = totalScroll * ratio;
-    const range = totalScroll * (1 - ratio);
-
-    const sc  = Math.min(Math.max(window.scrollY - start, 0), range);    const pct = sc / range;
-    footer.style.transform     = `translateY(${100 - pct * 100}%)`;    
-    footer.style.pointerEvents = pct > 0.1 ? "auto" : "none";
-  });
 
   // ────────────────────────────────────────────────────────────────
   // 3) THUMBNAILS PARALLAX BEHIND
@@ -705,12 +689,11 @@ function hidePopup() {
       // Build accordion panel with dynamic images
       item.classList.add('selected');
       const details = document.createElement('div');
-      details.className = 'project-accordion';
-      // start HTML
+      details.className = 'project-accordion project-details';
+      // start HTML         <p>${item.dataset.client}</p> 
       let html = `
-        <p><strong>Client:</strong> ${item.dataset.client}</p>
-        <p><strong>Work:</strong> ${item.dataset.work}</p>
-        <p><strong>Year:</strong> ${item.dataset.year}</p>
+        <p>${item.dataset.work}</p>
+        <p>${item.dataset.year}</p>
         <p>${item.dataset.description}</p>
       `;
       // insert all images inside a scrolling flex container
@@ -723,9 +706,23 @@ function hidePopup() {
         html += `</div>`;
       }
       // finish with link
-      html += `<p><a href="${item.dataset.link}" target="_blank" class="link-text">Visit site</a></p>`;
+      html += `<p><a href="${item.dataset.link}" target="_blank" class="link-text">→ Visit Site</a></p>`;
       details.innerHTML = html;
       item.appendChild(details);
+    });
+  }
+  // ─── Hide ambiance controls when overlapping the footer ────────────────────
+  const footerEl = document.getElementById('footer');
+  if (footerEl && ambianceControls) {
+    ['home-content', 'sites-content'].forEach(id => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.addEventListener('scroll', () => {
+        const controlsRect = ambianceControls.getBoundingClientRect();
+        const footerRect   = footerEl.getBoundingClientRect();
+        // hide if controls overlap footer area
+        ambianceControls.style.display = (controlsRect.bottom > footerRect.top ? 'none' : 'flex');
+      });
     });
   }
 }); // end DOMContentLoaded

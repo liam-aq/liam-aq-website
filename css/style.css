@@ -102,7 +102,6 @@ body {
   color: #000;
   background: var(--bg);
   position: relative;
-  padding-bottom: 30vh;
 }
 
 /* ─── SCROLL BUFFER ────────────────────────────────────────────────────────── */
@@ -111,28 +110,31 @@ body {
   pointer-events: none;
 }
 
-/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
 #footer {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100vw;
+  z-index: 1;
   height: auto;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: flex-start;
   padding-bottom: 20px;
+  padding-top: 5rem;
   background: var(--accent);
-  transform: translateY(100%);
-  pointer-events: none;
-  z-index: 10;
-  transition: transform 0.15s ease-out;
+  /* keep footer in place */
+  transform: none !important;
+  pointer-events: auto !important;
+  transition: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 #footer .footer-inner {
   width: 100%;
   padding: 0 20px;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   font-family: 'Commit Mono', monospace;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -592,7 +594,6 @@ body {
   font-size: 3vw;
   line-height: 1.1;
   font-family: 'Authentic Sans Condensed 90', sans-serif;
-  padding: 0 1rem;
 }
 
 .intro a {
@@ -715,53 +716,6 @@ body {
 }
 
 
-/* ─── FOOTER ───────────────────────────────────────────────────────────────── */
-#footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 20px;
-  background: var(--accent);
-  transform: translateY(100%);
-  pointer-events: none;
-  z-index: 10;
-  transition: transform 0.15s ease-out;
-}
-#footer .footer-inner {
-  width: 100%;
-  padding: 0 20px;
-  display: flex;
-  align-items: flex-end;
-  font-family: 'Commit Mono', monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  color: #000;
-}
-#footer .footer-columns {
-  display: flex;
-  gap: 2rem;
-  width: 100%;
-}
-#footer .footer-left {
-  flex: 0 0 50%;
-  line-height: 1.4;
-  text-align: left;
-}
-#footer .footer-right {
-  margin-left: 20px;
-  line-height: 1.4;
-  text-align: left;
-}
-/* selection color in footer */
-#footer ::selection {
-  background: #000;
-  color: var(--accent);
-}
 
 
 /* ─── CHEQUE / RECEIPT POPUP ───────────────────────────────────────────────── */
@@ -959,7 +913,7 @@ body {
   }
 
   /* footer inner */
-  #footer .footer-inner { padding: 0 !important; }
+  #footer .footer-inner { padding: 1rem !important; }
 }
 
 
@@ -1139,65 +1093,11 @@ body.dimmed {
 }
 
 .project-details {
-  font-family: 'PS Times', serif;
-  font-size: 2rem;
-  white-space: pre-wrap;
-  margin-top: 1.5rem;
-}
-
-/* ─── SITES PAGE SPACING & ACCORDION ───────────────────────────────────────── */
-main {
-  padding: 2rem 1rem;
-}
-
-#thumbnail-preview {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  background-size: cover;
-  background-position: center;
-  pointer-events: none;
-  z-index: 1000;
-  display: none;
-}
-
-/* Accordion styles for projects */
-.project-accordion {
-  margin-top: 0rem;
-  padding-left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  display: block;
-  height: auto !important;
-  overflow: visible !important;
-  font-family: 'PS Times', serif;
+  font-family: 'Authentic Sans Condensed 90', sans-serif;
+  font-size: 1.5rem;
   white-space: normal;
-  background: transparent;
 }
 
-.project-accordion h2,
-.project-accordion p {
-  margin: 0.25rem 0;
-  font-size: 1.4rem;
-  line-height: 1.2;
-}
-
-/* .project-item.selected {
-  background: rgba(0, 0, 0, 0.05);
-} */
-
-/* Apply full-page padding on sites page */
-body {
-  padding: 2rem 1rem !important;
-}
-
-/* Mono heading on sites page */
-header h1 {
-  font-family: 'Commit Mono', monospace;
-  font-size: 1rem !important;
-  text-transform: uppercase;
-  line-height: 1.1;
-}
 /* ─── BACK LINK AS WAITER BUTTON ───────────────────────────────────────────── */
 .back-link {
   font-family: 'Commit Mono', monospace;
@@ -1238,4 +1138,55 @@ header h1 {
   width: auto;
   display: block;
   flex: 0 0 auto;
+}
+
+/* Main content sits on top with blank bottom area for footer reveal */
+#home-content,
+#sites-content {
+  position: relative;
+  padding: 1.5rem;
+  z-index: 2;
+  background: var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+/* Accordion auto-height override (moved to bottom to ensure precedence) */
+.project-accordion {
+  display: block !important;
+  height: auto   !important;
+  padding: 0     !important;
+  margin:  0     !important;
+}
+
+/* Tighten up paragraph spacing inside accordions */
+.project-details p {
+  margin: 0.25rem 0 !important;
+}
+.project-accordion .link-text {
+  color: var(--accent);
+}
+.project-accordion .link-text:hover {
+  /* keep underline animation, swap text to black on hover */
+  color: #000 !important;
+}
+
+/* ─── Main Section Email & View-Sites Links ───────────────────────────────── */
+#email-link,
+#view-sites {
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+#email-link:hover,
+#view-sites:hover {
+  /* highlight background stays accent, but text turns black */
+  color: #000 !important;
+}
+
+/* Keep Visit Site links accent color on hover in accordions */
+.project-accordion p a.link-text:hover {
+  color: var(--accent) !important;
 }
